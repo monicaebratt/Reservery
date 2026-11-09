@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200">
+  <defs><linearGradient id="f" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3EEFF"/><stop offset="1" stop-color="#DCCDFB"/></linearGradient></defs>
+  <rect width="300" height="200" fill="url(#f)"/>
+  <!-- ventana -->
+  <rect x="90" y="38" width="120" height="58" rx="6" fill="#fff" opacity=".75"/>
+  <path d="M150 38v58M90 67h120" stroke="#DCCDFB" stroke-width="3"/>
+  <!-- mesa y sillas -->
+  <rect x="70" y="122" width="160" height="14" rx="7" fill="#8061C5"/>
+  <path d="M90 136v30M210 136v30" stroke="#8061C5" stroke-width="6" stroke-linecap="round"/>
+  <rect x="96" y="104" width="22" height="16" rx="5" fill="#B99AEF"/><rect x="139" y="104" width="22" height="16" rx="5" fill="#B99AEF"/><rect x="182" y="104" width="22" height="16" rx="5" fill="#B99AEF"/>
+  <path d="M252 30l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#8061C5"/>
+</svg>
