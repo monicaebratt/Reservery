@@ -2,47 +2,82 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    public const ROLES = ['organizacion' => 'Organización', 'admin' => 'Administrador', 'usuario' => 'Usuario'];
+
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'organizacion_id', 'name', 'email', 'password', 'rol', 'telefono', 'foto', 'google_id', 'email_verified_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    protected $hidden = ['password', 'remember_token', 'google_id'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function organizacion(): BelongsTo
+    {
+        return $this->belongsTo(Organizacion::class);
+    }
+
+    public function reservas(): HasMany
+    {
+        return $this->hasMany(Reserva::class);
+    }
+
+    public function notificaciones(): HasMany
+    {
+        return $this->hasMany(Notificacion::class);
+    }
+
+    public function listaEspera(): HasMany
+    {
+        return $this->hasMany(ListaEspera::class);
+    }
+
+    // ---------- Roles (RF12) ----------
+
+    /** Cuenta que registró la organización. */
+    public function esOrganizacion(): bool
+    {
+        return $this->rol === 'organizacion';
+    }
+
+    /** Administra espacios, recursos y solicitudes (la cuenta de la organización también puede). */
+    public function esAdmin(): bool
+    {
+        return in_array($this->rol, ['organizacion', 'admin'], true);
+    }
+
+    public function tieneOrganizacionActiva(): bool
+    {
+        return $this->organizacion_id && $this->organizacion?->configurada;
+    }
+
+    public function getRolNombreAttribute(): string
+    {
+        return self::ROLES[$this->rol] ?? $this->rol;
+    }
+
+    public function getFotoUrlAttribute(): string
+    {
+        return $this->foto
+            ? (str_starts_with($this->foto, 'http') ? $this->foto : Storage::disk('public')->url($this->foto))
+            : 'https://ui-avatars.com/api/?background=EDE5FF&color=8061C5&bold=true&name='.urlencode(trim(preg_replace('/[^\p{L}\s]/u', '', $this->name)) ?: 'R');
     }
 }
