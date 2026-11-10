@@ -1,0 +1,1 @@
+@include('errors.plantilla', ['codigo' => 500, 'imagen' => 'img/error-500.png', 'cuadrada' => true, 'descripcion' => 'La mascota de Reservery con una curita y una llave inglesa, número 500', 'titulo' => '¡Oops! Algo salió mal', 'mensaje' => 'Tuvimos un problema inesperado. Intenta de nuevo en un momento.'])

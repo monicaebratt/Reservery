@@ -1,0 +1,2 @@
+@php($texto = $exception?->getMessage())
+@include('errors.plantilla', ['codigo' => 403, 'imagen' => 'img/error-403.png', 'cuadrada' => true, 'descripcion' => 'La mascota de Reservery, seria, cuida un candado con el número 403', 'titulo' => '¡Oops! No tienes permiso', 'mensaje' => ($texto && $texto !== 'This action is unauthorized.' && $texto !== 'Forbidden') ? $texto : 'Esta sección no está disponible para tu rol.'])
