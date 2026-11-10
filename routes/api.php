@@ -17,18 +17,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 // ---------- Público: obtener un token ----------
-Route::post('/auth/registro', [AuthApiController::class, 'registro']);
-Route::post('/auth/login', [AuthApiController::class, 'login']);
-Route::post('/auth/google', [AuthApiController::class, 'google']);
-Route::post('/organizaciones', [OrganizacionApiController::class, 'store']); // RF01.1
+Route::post('/auth/registro', [AuthApiController::class, 'registro'])->middleware('throttle:acceso');
+Route::post('/auth/login', [AuthApiController::class, 'login'])->middleware('throttle:acceso');
+Route::post('/auth/google', [AuthApiController::class, 'google'])->middleware('throttle:acceso');
+Route::post('/auth/reenviar-verificacion', [AuthApiController::class, 'reenviarVerificacion'])->middleware('throttle:acceso');
+Route::post('/organizaciones', [OrganizacionApiController::class, 'store'])->middleware('throttle:acceso'); // RF01.1
 
+// ---------- Cuenta ----------
 Route::middleware('auth:sanctum')->group(function () {
-    // ---------- Cuenta ----------
     Route::get('/auth/yo', [AuthApiController::class, 'yo']);
     Route::post('/auth/logout', [AuthApiController::class, 'logout']);
+});
+
+// Todo lo demás exige token Y correo confirmado
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // ---------- Organización (RF01.1, RF01.2) ----------
-    Route::post('/organizacion/unirse', [OrganizacionApiController::class, 'unirse']);
+    Route::post('/organizacion/unirse', [OrganizacionApiController::class, 'unirse'])->middleware('throttle:acceso');
     Route::get('/organizacion', [OrganizacionApiController::class, 'show']);
     Route::middleware('rol:organizacion')->group(function () {
         Route::put('/organizacion', [OrganizacionApiController::class, 'update']);

@@ -7,5 +7,13 @@
     "Next": "Siguiente",
     "Pagination Navigation": "Navegación de páginas",
     "&laquo; Previous": "&laquo; Anterior",
-    "Next &raquo;": "Siguiente &raquo;"
+    "Next &raquo;": "Siguiente &raquo;",
+    "Verify Email Address": "Confirma tu correo",
+    "Please click the button below to verify your email address.": "Toca el botón para confirmar tu correo en Reservery.",
+    "If you did not create an account, no further action is required.": "Si no creaste una cuenta, ignora este mensaje.",
+    "Hello!": "¡Hola!",
+    "Regards,": "Saludos,",
+    "Too Many Attempts.": "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Si el botón \":actionText\" no funciona, copia y pega este enlace en tu navegador:",
+    "Your email address is not verified.": "Confirma tu correo para continuar."
 }

@@ -42,8 +42,10 @@ class OrganizacionApiController extends Controller
             ]);
             $usuario = User::create(['name' => $cuenta['cuenta_nombre'], 'email' => mb_strtolower($cuenta['cuenta_email']), 'password' => $cuenta['password']]);
             $org = $this->organizaciones->registrar($request->datos(), $usuario);
+            $usuario->enviarVerificacion();
 
-            return ['org' => $org, 'usuario' => $usuario, 'token' => $usuario->createToken('api')->plainTextToken];
+            // Sin token: primero debe confirmar el correo
+            return ['org' => $org, 'usuario' => $usuario, 'token' => null];
         });
 
         $resultado['usuario']->refresh();
@@ -52,7 +54,9 @@ class OrganizacionApiController extends Controller
             'organizacion' => new OrganizacionResource($resultado['org']->fresh()),
             'usuario' => new UsuarioResource($resultado['usuario']),
             'token' => $resultado['token'],
-            'siguiente_paso' => 'Revisa la configuración (PUT /api/organizacion) y habilita el acceso (POST /api/organizacion/habilitar).',
+            'siguiente_paso' => $resultado['token'] === null && ! $usuarioActual
+                ? 'Confirma tu correo con el enlace que te enviamos, inicia sesión (POST /api/auth/login) y luego configura y habilita la organización.'
+                : 'Revisa la configuración (PUT /api/organizacion) y habilita el acceso (POST /api/organizacion/habilitar).',
         ], 201);
     }
 

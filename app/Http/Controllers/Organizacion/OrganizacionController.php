@@ -50,9 +50,11 @@ class OrganizacionController extends Controller
         });
 
         $request->session()->regenerate();
+        $request->user()->enviarVerificacion();
 
-        return redirect()->route('organizacion.edit')
-            ->with('ok', "{$org->nombre} quedó registrada. Revisa la configuración y habilita el acceso de tus miembros.");
+        // Hasta confirmar el correo no puede configurar nada
+        return redirect()->route('verification.notice')
+            ->with('ok', "{$org->nombre} quedó registrada. Confirma tu correo para configurarla.");
     }
 
     /** Quien ya tiene cuenta (por ejemplo, entró con Google) registra su organización. */

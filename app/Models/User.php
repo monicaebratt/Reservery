@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,7 +11,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+/** Debe confirmar su correo para que se le apliquen invitaciones con rol (seguridad). */
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -79,5 +81,18 @@ class User extends Authenticatable
         return $this->foto
             ? (str_starts_with($this->foto, 'http') ? $this->foto : Storage::disk('public')->url($this->foto))
             : 'https://ui-avatars.com/api/?background=EDE5FF&color=8061C5&bold=true&name='.urlencode(trim(preg_replace('/[^\p{L}\s]/u', '', $this->name)) ?: 'R');
+    }
+
+    /** Envía el correo de verificación sin romper el flujo si el correo falla. */
+    public function enviarVerificacion(): void
+    {
+        if ($this->hasVerifiedEmail()) {
+            return;
+        }
+        try {
+            $this->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 }

@@ -28,6 +28,16 @@ class Reemplazo extends Model
         return $this->belongsTo(Reserva::class, 'reserva_afectada_id');
     }
 
+    /**
+     * Al buscar un reemplazo por la URL ({reemplazo}), solo se encuentran los
+     * de la organización del usuario: la reserva afectada tiene ese filtro (RNF06).
+     * Si es de otra organización responde 404 en la web y en la API.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? $this->getRouteKeyName(), $value)->whereHas('afectada')->firstOrFail();
+    }
+
     public function estaAbierto(): bool
     {
         return in_array($this->estado, ['propuesto', 'alternativa_aceptada', 'sin_alternativa'], true);

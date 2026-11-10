@@ -43,11 +43,16 @@ class GoogleController extends Controller
             ->first();
 
         if ($usuario) {
-            $usuario->forceFill([
+            $datos = [
                 'google_id' => $usuario->google_id ?? $google->getId(),
                 'foto' => $usuario->foto ?? $google->getAvatar(),
-                'email_verified_at' => $usuario->email_verified_at ?? now(),
-            ])->save();
+            ];
+            // Google confirma que el correo es de esta persona. Si la cuenta no lo
+            // había confirmado, se borra la contraseña que puso quien la creó.
+            if (! $usuario->hasVerifiedEmail()) {
+                $datos += ['email_verified_at' => now(), 'password' => null];
+            }
+            $usuario->forceFill($datos)->save();
         } else {
             $usuario = User::create([
                 'name' => $google->getName() ?: $google->getNickname() ?: 'Usuario de Google',
@@ -61,7 +66,8 @@ class GoogleController extends Controller
 
         // Unirse a su organización si trae código o si su correo fue invitado
         $codigo = session()->pull('google.codigo');
-        if (! $usuario->organizacion_id) {
+        $organizaciones->aplicarInvitacionVerificada($usuario);
+        if (! $usuario->fresh()->organizacion_id) {
             try {
                 filled($codigo)
                     ? $organizaciones->unirseConCodigo($usuario, $codigo)

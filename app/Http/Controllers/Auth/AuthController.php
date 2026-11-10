@@ -73,12 +73,12 @@ class AuthController extends Controller
             return $usuario->fresh();
         });
 
+        $usuario->enviarVerificacion();
         Auth::login($usuario);
         $request->session()->regenerate();
 
-        return $usuario->tieneOrganizacionActiva()
-            ? redirect()->route('dashboard')->with('ok', "¡Bienvenido a {$usuario->organizacion->nombre}, {$usuario->name}!")
-            : redirect()->route('bienvenida');
+        // La cuenta no se puede usar hasta confirmar el correo
+        return redirect()->route('verification.notice');
     }
 
     public function logout(Request $request)

@@ -61,7 +61,7 @@ class OrganizacionService
 
         // Las invitaciones de usuarios que ya tenían cuenta se aplican ahora
         foreach ($org->invitaciones()->whereNull('aceptada_at')->get() as $inv) {
-            if ($u = User::where('email', $inv->email)->whereNull('organizacion_id')->first()) {
+            if ($u = User::where('email', $inv->email)->whereNull('organizacion_id')->whereNotNull('email_verified_at')->first()) {
                 $this->aplicarInvitacion($u, $inv);
             }
         }
@@ -85,9 +85,11 @@ class OrganizacionService
             throw ValidationException::withMessages(['codigo' => 'Esa organización todavía no habilita el acceso de sus miembros.']);
         }
 
-        // Si su correo fue invitado con rol admin, se respeta ese rol
+        // Si su correo fue invitado con rol admin, se respeta ese rol,
+        // pero solo si ya confirmó que el correo es suyo (si no, entra como usuario
+        // y el rol se aplica cuando lo confirme)
         $invitacion = $org->invitaciones()->where('email', mb_strtolower($usuario->email))->whereNull('aceptada_at')->first();
-        if ($invitacion) {
+        if ($invitacion && $usuario->hasVerifiedEmail()) {
             $this->aplicarInvitacion($usuario, $invitacion);
         } else {
             $usuario->update(['organizacion_id' => $org->id, 'rol' => 'usuario']);
@@ -99,7 +101,8 @@ class OrganizacionService
     /** Si el correo del usuario tiene una invitación pendiente en una organización habilitada, lo une. */
     public function unirsePorInvitacion(User $usuario): ?Organizacion
     {
-        if ($usuario->organizacion_id) {
+        // Sin correo confirmado, cualquiera podría registrarse con un correo ajeno
+        if ($usuario->organizacion_id || ! $usuario->hasVerifiedEmail()) {
             return null;
         }
 
@@ -138,7 +141,7 @@ class OrganizacionService
         );
 
         // Si ya tenía cuenta sin organización y la organización está habilitada, entra de una vez
-        if ($usuario && $org->configurada) {
+        if ($usuario && $org->configurada && $usuario->hasVerifiedEmail()) {
             $this->aplicarInvitacion($usuario, $invitacion);
 
             return ['estado' => 'unido', 'usuario' => $usuario->fresh()];
@@ -151,6 +154,28 @@ class OrganizacionService
         }
 
         return ['estado' => 'invitado', 'invitacion' => $invitacion];
+    }
+
+    /**
+     * Al confirmar el correo: aplica la invitación pendiente de ese correo.
+     * Si no tenía organización, lo une; si ya entró con el código a esa misma
+     * organización, recibe el rol con que fue invitado.
+     */
+    public function aplicarInvitacionVerificada(User $usuario): ?Organizacion
+    {
+        if (! $usuario->hasVerifiedEmail()) {
+            return null;
+        }
+
+        $invitacion = Invitacion::withoutGlobalScopes()
+            ->where('email', mb_strtolower($usuario->email))
+            ->whereNull('aceptada_at')
+            ->whereHas('organizacion', fn ($q) => $q->where('configurada', true))
+            ->when($usuario->organizacion_id, fn ($q) => $q->where('organizacion_id', $usuario->organizacion_id))
+            ->oldest()
+            ->first();
+
+        return $invitacion ? $this->aplicarInvitacion($usuario, $invitacion) : null;
     }
 
     private function aplicarInvitacion(User $usuario, Invitacion $invitacion): Organizacion

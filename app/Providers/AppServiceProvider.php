@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
@@ -18,6 +21,14 @@ class AppServiceProvider extends ServiceProvider
     {
         // Paginación con estilos de Bootstrap
         Paginator::useBootstrapFive();
+
+        // Máximo 5 intentos por minuto en cada formulario de acceso (login, registro,
+        // contraseña, código), por IP. Frena a quien prueba contraseñas una tras otra.
+        RateLimiter::for('acceso', fn (Request $request) => Limit::perMinute(5)
+            ->by($request->path().'|'.$request->ip())
+            ->response(fn () => $request->expectsJson()
+                ? response()->json(['mensaje' => 'Demasiados intentos. Espera un minuto e inténtalo de nuevo.'], 429)
+                : back()->withErrors(['email' => 'Demasiados intentos. Espera un minuto e inténtalo de nuevo.'])->withInput($request->except('password'))));
 
         // Correo de "olvidé mi contraseña" en español
         ResetPassword::toMailUsing(function ($usuario, string $token) {

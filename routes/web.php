@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\VerificacionController;
 use App\Http\Controllers\BienvenidaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DisponibilidadController;
@@ -27,35 +28,44 @@ Route::view('/', 'welcome')->name('inicio');
 */
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:acceso');
     Route::get('/registro', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/registro', [AuthController::class, 'register']);
+    Route::post('/registro', [AuthController::class, 'register'])->middleware('throttle:acceso');
 
     // RF01.1: una organización se registra junto con su cuenta
     Route::get('/registro-organizacion', [OrganizacionController::class, 'create'])->name('organizacion.create');
-    Route::post('/registro-organizacion', [OrganizacionController::class, 'store'])->name('organizacion.store');
+    Route::post('/registro-organizacion', [OrganizacionController::class, 'store'])->middleware('throttle:acceso')->name('organizacion.store');
 
     // Restaurar contraseña
     Route::get('/olvide-contrasena', [PasswordController::class, 'showForgot'])->name('password.request');
-    Route::post('/olvide-contrasena', [PasswordController::class, 'sendLink'])->name('password.email');
+    Route::post('/olvide-contrasena', [PasswordController::class, 'sendLink'])->middleware('throttle:acceso')->name('password.email');
     Route::get('/restablecer-contrasena/{token}', [PasswordController::class, 'showReset'])->name('password.reset');
-    Route::post('/restablecer-contrasena', [PasswordController::class, 'reset'])->name('password.update');
+    Route::post('/restablecer-contrasena', [PasswordController::class, 'reset'])->middleware('throttle:acceso')->name('password.update');
 });
 
 // Inicio de sesión con Google (sirve para entrar, registrarse o registrar una organización)
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 
+// Confirmar el correo (necesario para recibir una invitación con rol)
+Route::get('/correo/verificar/{id}/{hash}', [VerificacionController::class, 'verificar'])
+    ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Pantalla "Confirma tu correo": hasta confirmarlo no se puede usar nada más
+    Route::get('/correo/confirmar', [VerificacionController::class, 'aviso'])->name('verification.notice');
+    Route::post('/correo/reenviar', [VerificacionController::class, 'reenviar'])
+        ->middleware('throttle:3,1')->name('verification.send');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Con sesión, pero aún sin organización habilitada
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bienvenida', [BienvenidaController::class, 'index'])->name('bienvenida');
-    Route::post('/bienvenida/unirse', [BienvenidaController::class, 'unirse'])->name('bienvenida.unirse');
+    Route::post('/bienvenida/unirse', [BienvenidaController::class, 'unirse'])->middleware('throttle:acceso')->name('bienvenida.unirse');
     Route::post('/bienvenida/organizacion', [OrganizacionController::class, 'storeParaCuenta'])->name('bienvenida.organizacion');
 
     // RF01.1: la cuenta de la organización configura sus datos aunque aún no esté habilitada
@@ -79,7 +89,7 @@ Route::middleware('auth')->group(function () {
 | Zona privada: sesión iniciada y organización habilitada
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'organizacion.activa'])->group(function () {
+Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Disponibilidad en tiempo real (RF02, HU03)
