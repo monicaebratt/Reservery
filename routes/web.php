@@ -135,6 +135,10 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::get('/calendario/eventos', [\App\Http\Controllers\CalendarioController::class, 'eventos'])->name('calendario.eventos');   
          });
 
+    // Listados con datatables
+    Route::get('/listados/reservas', [\App\Http\Controllers\ListadoController::class, 'reservas'])->name('listados.reservas');    
+    Route::get('/listados/objetos', [\App\Http\Controllers\ListadoController::class, 'objetos'])->name('listados.objetos');
+
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 
