@@ -81,6 +81,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     // Calendario centralizado
     Route::get('/calendario', [\App\Http\Controllers\Api\CalendarioApiController::class, 'index'])->middleware('rol:admin');
 
+    // Lista de espera
+    Route::post('/alternativas', [\App\Http\Controllers\Api\AlternativaApiController::class, 'buscar']);        
+    Route::get('/lista-espera', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'index']);        
+    Route::post('/lista-espera', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'store']);        
+    Route::post('/lista-espera/{entrada}/convertir', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'convertir']);        
+    Route::delete('/lista-espera/{entrada}', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'destroy']);
+
 
         // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 

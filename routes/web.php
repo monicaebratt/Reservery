@@ -139,6 +139,12 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::get('/listados/reservas', [\App\Http\Controllers\ListadoController::class, 'reservas'])->name('listados.reservas');    
     Route::get('/listados/objetos', [\App\Http\Controllers\ListadoController::class, 'objetos'])->name('listados.objetos');
 
+    // Lista de espera
+    Route::post('/lista-espera', [\App\Http\Controllers\ListaEsperaController::class, 'store'])->middleware('rol:usuario')->name('lista-espera.store');    
+    Route::get('/lista-espera', [\App\Http\Controllers\ListaEsperaController::class, 'index'])->name('lista-espera.index');    
+    Route::post('/lista-espera/{entrada}/convertir', [\App\Http\Controllers\ListaEsperaController::class, 'convertir'])->name('lista-espera.convertir');    
+    Route::delete('/lista-espera/{entrada}', [\App\Http\Controllers\ListaEsperaController::class, 'destroy'])->name('lista-espera.destroy');
+
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 
