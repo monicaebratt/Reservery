@@ -126,7 +126,14 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::middleware('rol:admin')->group(function () {        
     Route::get('/bloqueos', [\App\Http\Controllers\BloqueoController::class, 'index'])->name('bloqueos.index');        
     Route::post('/bloqueos', [\App\Http\Controllers\BloqueoController::class, 'store'])->name('bloqueos.store');        
-    Route::delete('/bloqueos/{bloqueo}', [\App\Http\Controllers\BloqueoController::class, 'destroy'])->name('bloqueos.destroy');    });
+    Route::delete('/bloqueos/{bloqueo}', [\App\Http\Controllers\BloqueoController::class, 'destroy'])->name('bloqueos.destroy');  
+      });
+
+    // Calendarios centralizados
+    Route::middleware('rol:admin')->group(function () {        
+    Route::get('/calendario', [\App\Http\Controllers\CalendarioController::class, 'index'])->name('calendario.index');        
+    Route::get('/calendario/eventos', [\App\Http\Controllers\CalendarioController::class, 'eventos'])->name('calendario.eventos');   
+         });
 
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====

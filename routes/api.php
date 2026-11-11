@@ -77,6 +77,10 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::delete('/bloqueos/{bloqueo}', [\App\Http\Controllers\Api\BloqueoApiController::class, 'destroy']);     
       });
 
+    
+    // Calendario centralizado
+    Route::get('/calendario', [\App\Http\Controllers\Api\CalendarioApiController::class, 'index'])->middleware('rol:admin');
+
 
         // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 
