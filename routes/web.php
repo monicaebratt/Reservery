@@ -116,10 +116,17 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::delete('/api-tokens/{id}', [TokenController::class, 'destroy'])->name('api.tokens.destroy');
 
     // ===== Isabella: inventario, bloqueos, calendario, listados y lista de espera =====
+    // Inventario de espacios y recursos 
     Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
         ->parameters(['objetos' => 'objeto'])->except(['index', 'show'])->middleware('rol:admin');    
     Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
         ->parameters(['objetos' => 'objeto'])->only(['index', 'show']);
+
+    // Bloqueos por mantenimientos o eventos
+    Route::middleware('rol:admin')->group(function () {        
+    Route::get('/bloqueos', [\App\Http\Controllers\BloqueoController::class, 'index'])->name('bloqueos.index');        
+    Route::post('/bloqueos', [\App\Http\Controllers\BloqueoController::class, 'store'])->name('bloqueos.store');        
+    Route::delete('/bloqueos/{bloqueo}', [\App\Http\Controllers\BloqueoController::class, 'destroy'])->name('bloqueos.destroy');    });
 
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
