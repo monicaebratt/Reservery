@@ -59,6 +59,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/reservas/{reserva}/historial', [ReservaApiController::class, 'historial']);
 
         // ===== Isabella: inventario, bloqueos, calendario y lista de espera =====
+    Route::get('/objetos', [\App\Http\Controllers\Api\ObjetoApiController::class, 'index']);        
+    Route::get('/objetos/{objeto}', [\App\Http\Controllers\Api\ObjetoApiController::class, 'show']);        
+    Route::middleware('rol:admin')->group(function () {            
+    Route::post('/objetos', [\App\Http\Controllers\Api\ObjetoApiController::class, 'store']);            
+    Route::put('/objetos/{objeto}', [\App\Http\Controllers\Api\ObjetoApiController::class, 'update']);            
+    Route::delete('/objetos/{objeto}', [\App\Http\Controllers\Api\ObjetoApiController::class, 'destroy']);            
+    Route::put('/objetos/{objeto}/horarios', [\App\Http\Controllers\Api\ObjetoApiController::class, 'horarios']);       
+    Route::put('/objetos/{objeto}/recursos', [\App\Http\Controllers\Api\ObjetoApiController::class, 'recursos']);      
+      });
+
 
         // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 

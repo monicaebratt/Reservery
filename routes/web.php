@@ -116,6 +116,11 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::delete('/api-tokens/{id}', [TokenController::class, 'destroy'])->name('api.tokens.destroy');
 
     // ===== Isabella: inventario, bloqueos, calendario, listados y lista de espera =====
+    Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
+        ->parameters(['objetos' => 'objeto'])->except(['index', 'show'])->middleware('rol:admin');    
+    Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
+        ->parameters(['objetos' => 'objeto'])->only(['index', 'show']);
+
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 
