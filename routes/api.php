@@ -59,6 +59,35 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         Route::get('/reservas/{reserva}/historial', [ReservaApiController::class, 'historial']);
 
         // ===== Isabella: inventario, bloqueos, calendario y lista de espera =====
+        // Inventario de espacios y recursos
+    Route::get('/objetos', [\App\Http\Controllers\Api\ObjetoApiController::class, 'index']);        
+    Route::get('/objetos/{objeto}', [\App\Http\Controllers\Api\ObjetoApiController::class, 'show']);        
+    Route::middleware('rol:admin')->group(function () {            
+    Route::post('/objetos', [\App\Http\Controllers\Api\ObjetoApiController::class, 'store']);            
+    Route::put('/objetos/{objeto}', [\App\Http\Controllers\Api\ObjetoApiController::class, 'update']);            
+    Route::delete('/objetos/{objeto}', [\App\Http\Controllers\Api\ObjetoApiController::class, 'destroy']);            
+    Route::put('/objetos/{objeto}/horarios', [\App\Http\Controllers\Api\ObjetoApiController::class, 'horarios']);       
+    Route::put('/objetos/{objeto}/recursos', [\App\Http\Controllers\Api\ObjetoApiController::class, 'recursos']);      
+      });
+
+    // Bloqueos 
+    Route::middleware('rol:admin')->group(function () {            
+    Route::get('/bloqueos', [\App\Http\Controllers\Api\BloqueoApiController::class, 'index']);            
+    Route::post('/bloqueos', [\App\Http\Controllers\Api\BloqueoApiController::class, 'store']);            
+    Route::delete('/bloqueos/{bloqueo}', [\App\Http\Controllers\Api\BloqueoApiController::class, 'destroy']);     
+      });
+
+    
+    // Calendario centralizado
+    Route::get('/calendario', [\App\Http\Controllers\Api\CalendarioApiController::class, 'index'])->middleware('rol:admin');
+
+    // Lista de espera
+    Route::post('/alternativas', [\App\Http\Controllers\Api\AlternativaApiController::class, 'buscar']);        
+    Route::get('/lista-espera', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'index']);        
+    Route::post('/lista-espera', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'store']);        
+    Route::post('/lista-espera/{entrada}/convertir', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'convertir']);        
+    Route::delete('/lista-espera/{entrada}', [\App\Http\Controllers\Api\ListaEsperaApiController::class, 'destroy']);
+
 
         // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 

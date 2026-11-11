@@ -116,6 +116,35 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::delete('/api-tokens/{id}', [TokenController::class, 'destroy'])->name('api.tokens.destroy');
 
     // ===== Isabella: inventario, bloqueos, calendario, listados y lista de espera =====
+    // Inventario de espacios y recursos 
+    Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
+        ->parameters(['objetos' => 'objeto'])->except(['index', 'show'])->middleware('rol:admin');    
+    Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
+        ->parameters(['objetos' => 'objeto'])->only(['index', 'show']);
+
+    // Bloqueos por mantenimientos o eventos
+    Route::middleware('rol:admin')->group(function () {        
+    Route::get('/bloqueos', [\App\Http\Controllers\BloqueoController::class, 'index'])->name('bloqueos.index');        
+    Route::post('/bloqueos', [\App\Http\Controllers\BloqueoController::class, 'store'])->name('bloqueos.store');        
+    Route::delete('/bloqueos/{bloqueo}', [\App\Http\Controllers\BloqueoController::class, 'destroy'])->name('bloqueos.destroy');  
+      });
+
+    // Calendarios centralizados
+    Route::middleware('rol:admin')->group(function () {        
+    Route::get('/calendario', [\App\Http\Controllers\CalendarioController::class, 'index'])->name('calendario.index');        
+    Route::get('/calendario/eventos', [\App\Http\Controllers\CalendarioController::class, 'eventos'])->name('calendario.eventos');   
+         });
+
+    // Listados con datatables
+    Route::get('/listados/reservas', [\App\Http\Controllers\ListadoController::class, 'reservas'])->name('listados.reservas');    
+    Route::get('/listados/objetos', [\App\Http\Controllers\ListadoController::class, 'objetos'])->name('listados.objetos');
+
+    // Lista de espera
+    Route::post('/lista-espera', [\App\Http\Controllers\ListaEsperaController::class, 'store'])->middleware('rol:usuario')->name('lista-espera.store');    
+    Route::get('/lista-espera', [\App\Http\Controllers\ListaEsperaController::class, 'index'])->name('lista-espera.index');    
+    Route::post('/lista-espera/{entrada}/convertir', [\App\Http\Controllers\ListaEsperaController::class, 'convertir'])->name('lista-espera.convertir');    
+    Route::delete('/lista-espera/{entrada}', [\App\Http\Controllers\ListaEsperaController::class, 'destroy'])->name('lista-espera.destroy');
+
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
 
