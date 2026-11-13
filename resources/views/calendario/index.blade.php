@@ -40,7 +40,7 @@
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/locales/es.global.min.js"></script>
 <script>
-    // RF26 / HU18: todas las reservas activas y los bloqueos en una sola vista
+    // Todas las reservas activas y los bloqueos en una sola vista
     document.addEventListener('DOMContentLoaded', () => {
         const filtros = () => ({
             objeto: document.getElementById('filtroObjeto').value,

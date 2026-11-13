@@ -8,22 +8,22 @@ use App\Models\Proposito;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/** RF16 y RF17 por API. Leer: cualquier miembro. Escribir: administradores. */
+// Por API. Leer: cualquier miembro. Escribir: administradores
 class PropositoApiController extends Controller
 {
-    /** GET /api/propositos — el nivel de prioridad solo aparece para administradores */
+    // GET /api/propositos — el nivel de prioridad solo aparece para administradores
     public function index()
     {
         return PropositoResource::collection(Proposito::orderByDesc('nivel_prioridad')->get());
     }
 
-    /** POST /api/propositos */
+    // POST /api/propositos
     public function store(Request $request)
     {
         return (new PropositoResource(Proposito::create($this->validar($request))))->response()->setStatusCode(201);
     }
 
-    /** PUT /api/propositos/{id} */
+    // PUT /api/propositos/{id}
     public function update(Request $request, Proposito $proposito)
     {
         $proposito->update($this->validar($request, $proposito));
@@ -31,7 +31,7 @@ class PropositoApiController extends Controller
         return new PropositoResource($proposito);
     }
 
-    /** DELETE /api/propositos/{id} */
+    // DELETE /api/propositos/{id}
     public function destroy(Proposito $proposito)
     {
         abort_if($proposito->reservas()->exists(), 409, 'Hay reservas con ese propósito; cámbiale el nombre o la prioridad en lugar de borrarlo.');

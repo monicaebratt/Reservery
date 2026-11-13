@@ -6,10 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * RF12: protege rutas según el rol. Uso: ->middleware('rol:admin') o 'rol:organizacion'.
- * La cuenta de la organización también tiene los permisos de administrador.
- */
+// Protege rutas según el rol
 class TieneRol
 {
     public function handle(Request $request, Closure $next, string ...$roles): Response

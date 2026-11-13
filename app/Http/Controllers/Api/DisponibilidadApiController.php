@@ -7,10 +7,10 @@ use App\Services\Reservas\DisponibilidadService;
 use App\Services\Reservas\ReservaService;
 use Illuminate\Http\Request;
 
-/** RF02 y RF04 por API. */
+// Por API
 class DisponibilidadApiController extends Controller
 {
-    /** GET /api/disponibilidad?fecha=2026-11-20&tipo=espacio&objetos[]=1 */
+    // GET /api/disponibilidad?fecha=2026-11-20&tipo=espacio&objetos[]=1
     public function agenda(Request $request, DisponibilidadService $disponibilidad)
     {
         $datos = $request->validate([
@@ -25,7 +25,7 @@ class DisponibilidadApiController extends Controller
         ]);
     }
 
-    /** POST /api/disponibilidad/verificar {objetos[], fecha, hora_inicio, hora_fin} */
+    // POST /api/disponibilidad/verificar {objetos[], fecha, hora_inicio, hora_fin}
     public function verificar(Request $request, DisponibilidadService $disponibilidad, ReservaService $reservas)
     {
         $datos = $request->validate([

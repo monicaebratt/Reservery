@@ -6,7 +6,7 @@ use App\Models\Reemplazo;
 use App\Services\Prioridad\PrioridadService;
 use Illuminate\Http\Request;
 
-/** RF18 / HU11: el afectado por una reserva prioritaria recibe aviso y alternativas. */
+// El afectado por una reserva prioritaria recibe aviso y alternativas
 class ReemplazoController extends Controller
 {
     public function __construct(private PrioridadService $prioridad)

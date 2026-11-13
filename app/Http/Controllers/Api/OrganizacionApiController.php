@@ -14,18 +14,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
 
-/** RF01.1 y RF01.2 por API. */
+// Por API
 class OrganizacionApiController extends Controller
 {
     public function __construct(private OrganizacionService $organizaciones)
     {
     }
 
-    /**
-     * POST /api/organizaciones
-     * Sin token: registra la organización y crea su cuenta (cuenta_nombre, cuenta_email, password).
-     * Con token de un usuario sin organización: la registra a su nombre.
-     */
+    // Registra la organización junto con su cuenta
     public function store(OrganizacionRequest $request)
     {
         $usuarioActual = auth('sanctum')->user();
@@ -60,7 +56,7 @@ class OrganizacionApiController extends Controller
         ], 201);
     }
 
-    /** POST /api/organizacion/unirse {codigo} */
+    // POST /api/organizacion/unirse {codigo}
     public function unirse(Request $request)
     {
         $request->validate(['codigo' => ['required', 'string', 'max:12']]);
@@ -69,7 +65,7 @@ class OrganizacionApiController extends Controller
         return response()->json(['mensaje' => "Te uniste a {$org->nombre}.", 'organizacion' => new OrganizacionResource($org)]);
     }
 
-    /** GET /api/organizacion */
+    // GET /api/organizacion
     public function show(Request $request)
     {
         $org = $request->user()->organizacion;
@@ -78,7 +74,7 @@ class OrganizacionApiController extends Controller
         return new OrganizacionResource($org);
     }
 
-    /** PUT /api/organizacion — configurarDatosBasicos() */
+    // PUT /api/organizacion — configurarDatosBasicos()
     public function update(OrganizacionRequest $request)
     {
         $org = $request->user()->organizacion;
@@ -90,13 +86,13 @@ class OrganizacionApiController extends Controller
         return new OrganizacionResource($this->organizaciones->configurar($org, $datos));
     }
 
-    /** POST /api/organizacion/habilitar */
+    // POST /api/organizacion/habilitar
     public function habilitar(Request $request)
     {
         return new OrganizacionResource($this->organizaciones->habilitar($request->user()->organizacion));
     }
 
-    /** POST /api/organizacion/codigo — genera un código de invitación nuevo */
+    // POST /api/organizacion/codigo — genera un código de invitación nuevo
     public function regenerarCodigo(Request $request)
     {
         $org = $request->user()->organizacion;
@@ -105,13 +101,13 @@ class OrganizacionApiController extends Controller
         return response()->json(['codigo_invitacion' => $org->codigo_invitacion]);
     }
 
-    /** GET /api/organizacion/miembros */
+    // GET /api/organizacion/miembros
     public function miembros(Request $request)
     {
         return UsuarioResource::collection($request->user()->organizacion->miembros()->orderBy('name')->get());
     }
 
-    /** PUT /api/organizacion/miembros/{id}/rol {rol: admin|usuario} — asignarRolAdmin() / revocarRolAdmin() */
+    // Cambia el rol de un miembro (admin o usuario)
     public function cambiarRol(Request $request, User $miembro)
     {
         $request->validate(['rol' => ['required', 'in:admin,usuario']]);
@@ -121,7 +117,7 @@ class OrganizacionApiController extends Controller
         return new UsuarioResource($miembro->fresh());
     }
 
-    /** DELETE /api/organizacion/miembros/{id} */
+    // DELETE /api/organizacion/miembros/{id}
     public function quitarMiembro(Request $request, User $miembro)
     {
         abort_unless($miembro->organizacion_id === $request->user()->organizacion_id, 404);
@@ -132,13 +128,13 @@ class OrganizacionApiController extends Controller
         return response()->json(['mensaje' => "{$miembro->name} ya no pertenece a la organización."]);
     }
 
-    /** GET /api/organizacion/invitaciones */
+    // GET /api/organizacion/invitaciones
     public function invitaciones(Request $request)
     {
         return response()->json(['data' => $request->user()->organizacion->invitaciones()->whereNull('aceptada_at')->latest()->get(['id', 'email', 'rol', 'created_at'])]);
     }
 
-    /** POST /api/organizacion/invitaciones {email, rol} */
+    // POST /api/organizacion/invitaciones {email, rol}
     public function invitar(Request $request)
     {
         $datos = $request->validate(['email' => ['required', 'email'], 'rol' => ['required', 'in:admin,usuario']]);
@@ -151,7 +147,7 @@ class OrganizacionApiController extends Controller
         ], $r['estado'] === 'invitado' ? 201 : 200);
     }
 
-    /** DELETE /api/organizacion/invitaciones/{id} */
+    // DELETE /api/organizacion/invitaciones/{id}
     public function quitarInvitacion(Invitacion $invitacion)
     {
         $invitacion->delete();

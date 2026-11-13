@@ -8,12 +8,10 @@ use App\Models\User;
 use App\Notifications\AvisoReservery;
 use Illuminate\Support\Collection;
 
-/** RF11: notificaciones automáticas dentro de la app y por correo. */
+// Notificaciones automáticas dentro de la app y por correo
 class NotificacionService
 {
-    /**
-     * @param  User|iterable<User>  $destinatarios
-     */
+    // * @param  User|iterable<User>  $destinatarios
     public function enviar($destinatarios, string $tipo, string $titulo, string $mensaje, ?Reserva $reserva = null, ?string $url = null): void
     {
         $usuarios = $destinatarios instanceof User ? collect([$destinatarios]) : collect($destinatarios);
@@ -32,13 +30,13 @@ class NotificacionService
                 try {
                     $usuario->notify(new AvisoReservery($titulo, $mensaje, $url ?? ($reserva ? route('reservas.show', $reserva->id) : null)));
                 } catch (\Throwable $e) {
-                    report($e); // un correo que falla no debe tumbar la operación
+                    report($e);  // Un correo que falla no debe tumbar la operación
                 }
             }
         }
     }
 
-    /** Administradores de la organización de la reserva (los "involucrados" del lado de la gestión). */
+    // Administradores de la organización
     public function administradoresDe(int $organizacionId, ?User $excepto = null): Collection
     {
         return User::where('organizacion_id', $organizacionId)

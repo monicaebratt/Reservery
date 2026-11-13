@@ -11,17 +11,14 @@ use App\Services\FestivosService;
 use Illuminate\Support\Carbon;
 use Carbon\CarbonPeriod;
 
-/**
- * Analítica para administradores (RF23, RF24, RF25). Se calcula al momento
- * con los datos actuales de la base de datos (RNF09).
- */
+// Analítica para administradores
 class AnaliticaService
 {
     public function __construct(private FestivosService $festivos)
     {
     }
 
-    /** RF23 y RF24: ocupación por espacio o recurso en un periodo. */
+    // Ocupación por espacio o recurso en un periodo
     public function ocupacion(Organizacion $org, Carbon $desde, Carbon $hasta, ?string $tipo = null): ReporteDeOcupacion
     {
         $desde = $desde->copy()->startOfDay();
@@ -96,10 +93,7 @@ class AnaliticaService
         return new ReporteDeOcupacion($desde, $hasta, $filas, $org->umbral_subutilizacion);
     }
 
-    /**
-     * RF25: solicitudes por día de la semana y hora (mapa de calor) para un
-     * tipo o categoría. Cuenta todas las solicitudes, se aprueben o no.
-     */
+    // Solicitudes por día de la semana y hora (mapa de calor) para un tipo o categoría
     public function demanda(Organizacion $org, Carbon $desde, Carbon $hasta, ?string $tipo = null, ?string $categoria = null): array
     {
         $reservas = Reserva::where('organizacion_id', $org->id)
@@ -142,7 +136,7 @@ class AnaliticaService
         ];
     }
 
-    /** Totales para los gráficos del panel. */
+    // Totales para los gráficos del panel
     public function resumen(Organizacion $org, Carbon $desde, Carbon $hasta): array
     {
         $base = Reserva::where('organizacion_id', $org->id)->whereBetween('fecha', [$desde->toDateString(), $hasta->toDateString()]);

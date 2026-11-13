@@ -12,14 +12,14 @@ use App\Services\Sustitucion\SustitucionService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/** Reservas por API: GET, POST, PUT, PATCH y DELETE. */
+// Reservas por API: GET, POST, PUT, PATCH y DELETE
 class ReservaApiController extends Controller
 {
     public function __construct(private ReservaService $reservas, private SustitucionService $sustitucion)
     {
     }
 
-    /** GET /api/reservas?estado=pendiente&todas=1 — RF09 historial */
+    // GET /api/reservas?estado=pendiente&todas=1
     public function index(Request $request)
     {
         $usuario = $request->user();
@@ -36,11 +36,7 @@ class ReservaApiController extends Controller
         );
     }
 
-    /**
-     * POST /api/reservas
-     * Si no está disponible responde 409 con las alternativas (RF19–RF21) para
-     * que el cliente elija una o se anote en la lista de espera (RF22).
-     */
+    // Crea la reserva; si no está libre devuelve 409 con alternativas
     public function store(SolicitudReservaRequest $request)
     {
         try {
@@ -52,7 +48,7 @@ class ReservaApiController extends Controller
         return (new ReservaResource($reserva->load('reemplazosPropuestos')))->response()->setStatusCode(201);
     }
 
-    /** GET /api/reservas/{id} */
+    // GET /api/reservas/{id}
     public function show(Request $request, Reserva $reserva)
     {
         $this->autorizar($request, $reserva);
@@ -60,7 +56,7 @@ class ReservaApiController extends Controller
         return new ReservaResource($reserva->load(['usuario', 'objetos', 'proposito', 'reemplazosPropuestos']));
     }
 
-    /** PUT /api/reservas/{id} — editar datos (solo si sigue pendiente) */
+    // PUT /api/reservas/{id} — editar datos (solo si sigue pendiente)
     public function update(SolicitudReservaRequest $request, Reserva $reserva)
     {
         try {
@@ -72,7 +68,7 @@ class ReservaApiController extends Controller
         return new ReservaResource($reserva);
     }
 
-    /** PATCH /api/reservas/{id}/estado {accion: aprobar|rechazar|cancelar|completar, motivo?} — RF05 */
+    // PATCH /api/reservas/{id}/estado {accion: aprobar|rechazar|cancelar|completar, motivo?}
     public function cambiarEstado(Request $request, Reserva $reserva)
     {
         $datos = $request->validate([
@@ -83,7 +79,7 @@ class ReservaApiController extends Controller
         return new ReservaResource($this->reservas->cambiarEstado($reserva, $datos['accion'], $request->user(), $datos['motivo'] ?? null));
     }
 
-    /** GET /api/reservas/{id}/historial — RNF08 */
+    // GET /api/reservas/{id}/historial
     public function historial(Request $request, Reserva $reserva)
     {
         $this->autorizar($request, $reserva);
@@ -98,7 +94,7 @@ class ReservaApiController extends Controller
         ])]);
     }
 
-    /** DELETE /api/reservas/{id} */
+    // DELETE /api/reservas/{id}
     public function destroy(Request $request, Reserva $reserva)
     {
         $this->reservas->eliminar($reserva, $request->user());

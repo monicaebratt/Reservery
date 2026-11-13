@@ -8,7 +8,7 @@ use App\Models\Organizacion;
 use App\Services\InventarioService;
 use Illuminate\Http\Request;
 
-/** RF10: inventario de espacios y recursos, con imagen, horario (RF06) y paquetes (RF14). */
+// Inventario de espacios y recursos, con imagen, horario y paquetes
 class ObjetoReservableController extends Controller
 {
     public function __construct(private InventarioService $inventario)

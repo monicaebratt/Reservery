@@ -27,7 +27,7 @@ class Organizacion extends Model
 
     public const DIAS = [1 => 'Lunes', 2 => 'Martes', 3 => 'Miércoles', 4 => 'Jueves', 5 => 'Viernes', 6 => 'Sábado', 7 => 'Domingo'];
 
-    /** Propósitos con los que arranca toda organización (RF16); el admin los puede cambiar (RF17). */
+    // Propósitos con los que arranca toda organización; el admin los puede cambiar
     public const PROPOSITOS_INICIALES = [
         ['nombre' => 'Evento institucional', 'nivel_prioridad' => 4, 'color' => '#35265E', 'descripcion' => 'Actividades oficiales de la organización'],
         ['nombre' => 'Clase programada', 'nivel_prioridad' => 3, 'color' => '#8061C5', 'descripcion' => 'Clases o capacitaciones del calendario'],
@@ -78,7 +78,7 @@ class Organizacion extends Model
         return $codigo;
     }
 
-    // ---------- Relaciones ----------
+    // Relaciones
 
     public function miembros(): HasMany
     {
@@ -110,9 +110,9 @@ class Organizacion extends Model
         return $this->hasMany(ObjetoReservable::class);
     }
 
-    // ---------- Operaciones del diagrama de clases ----------
+    // Operaciones del diagrama de clases
 
-    /** asignarRolAdmin() — RF01.2 */
+    // asignarRolAdmin()
     public function asignarRolAdmin(User $miembro): void
     {
         abort_unless($miembro->organizacion_id === $this->id, 422, 'Ese usuario no pertenece a la organización.');
@@ -120,7 +120,7 @@ class Organizacion extends Model
         $miembro->update(['rol' => 'admin']);
     }
 
-    /** revocarRolAdmin() — RF01.2 */
+    // revocarRolAdmin()
     public function revocarRolAdmin(User $miembro): void
     {
         abort_unless($miembro->organizacion_id === $this->id, 422, 'Ese usuario no pertenece a la organización.');

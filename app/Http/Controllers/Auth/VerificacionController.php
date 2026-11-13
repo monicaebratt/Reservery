@@ -8,13 +8,10 @@ use App\Services\Organizaciones\OrganizacionService;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 
-/**
- * Confirmación del correo. Sirve para demostrar que el correo es de quien se
- * registró: solo entonces se le aplica una invitación con rol (RF01.2).
- */
+// Confirmación del correo
 class VerificacionController extends Controller
 {
-    /** Pantalla que ve quien aún no confirma su correo. */
+    // Pantalla que ve quien aún no confirma su correo
     public function aviso(Request $request)
     {
         return $request->user()->hasVerifiedEmail()
@@ -22,7 +19,7 @@ class VerificacionController extends Controller
             : view('auth.verificar-correo', ['email' => $request->user()->email]);
     }
 
-    /** Enlace firmado que llega por correo. Funciona aunque no haya sesión iniciada. */
+    // Enlace firmado que llega por correo. Funciona aunque no haya sesión iniciada
     public function verificar(Request $request, string $id, string $hash, OrganizacionService $organizaciones)
     {
         $usuario = User::findOrFail($id);
@@ -41,7 +38,7 @@ class VerificacionController extends Controller
             : redirect()->route('login')->with('ok', $mensaje.' Ya puedes iniciar sesión.');
     }
 
-    /** Vuelve a enviar el correo de confirmación. */
+    // Vuelve a enviar el correo de confirmación
     public function reenviar(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {

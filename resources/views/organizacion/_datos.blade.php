@@ -1,4 +1,4 @@
-{{-- Datos básicos de la organización (registro y configuración). Requiere $tipos y opcional $org. --}}
+{{-- Datos básicos de la organización (registro y configuración) --}}
 @php($org = $org ?? null)
 <div class="row g-3">
     <div class="col-md-8">

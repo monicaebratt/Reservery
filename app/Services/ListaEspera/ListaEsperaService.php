@@ -14,10 +14,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-/**
- * Lista de espera por orden de llegada (RF22, HU14). Cuando un horario se
- * libera, se avisa al primero de la fila cuyo paquete completo quedó libre.
- */
+// Lista de espera por orden de llegada
 class ListaEsperaService
 {
     public function __construct(
@@ -26,7 +23,7 @@ class ListaEsperaService
     ) {
     }
 
-    /** inscribir() del diagrama de clases. */
+    // Inscribir del diagrama de clases
     public function inscribir(User $usuario, array $datos): ListaEspera
     {
         if ($usuario->esAdmin()) {
@@ -81,7 +78,7 @@ class ListaEsperaService
         }
     }
 
-    /** El usuario avisado convierte su turno en una reserva. */
+    // El usuario avisado convierte su turno en una reserva
     public function convertir(ListaEspera $entrada, User $usuario): Reserva
     {
         if ($entrada->user_id !== $usuario->id) {
@@ -108,12 +105,7 @@ class ListaEsperaService
         });
     }
 
-    /**
-     * notificarDisponibilidad() del diagrama: se llama cuando se cancela o
-     * rechaza una reserva, se edita o se quita un bloqueo.
-     *
-     * @param  array<int>  $objetoIds  objetos que quedaron libres
-     */
+    // Avisa a la lista de espera cuando algo se libera
     public function procesarLiberacion(array $objetoIds, string $fecha, string $inicio, string $fin, ?int $organizacionId = null): int
     {
         $candidatas = ListaEspera::withoutGlobalScopes()
@@ -156,7 +148,7 @@ class ListaEsperaService
         return $avisadas;
     }
 
-    /** Las inscripciones de días que ya pasaron quedan vencidas. */
+    // Las inscripciones de días que ya pasaron quedan vencidas
     public function vencerPasadas(): int
     {
         return ListaEspera::withoutGlobalScopes()->activas()->whereDate('fecha', '<', today())->update(['estado' => 'vencida']);

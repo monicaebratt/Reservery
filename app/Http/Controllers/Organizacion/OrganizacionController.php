@@ -13,17 +13,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
-/**
- * RF01.1: la organización se registra, configura su información básica y
- * habilita el acceso de usuarios y administradores.
- */
+// Registro y configuración de la organización
 class OrganizacionController extends Controller
 {
     public function __construct(private OrganizacionService $organizaciones)
     {
     }
 
-    /** Formulario público: datos de la organización + cuenta que la administra. */
+    // Formulario público: datos de la organización + cuenta que la administra
     public function create()
     {
         return view('organizacion.create', ['tipos' => Organizacion::TIPOS]);
@@ -57,7 +54,7 @@ class OrganizacionController extends Controller
             ->with('ok', "{$org->nombre} quedó registrada. Confirma tu correo para configurarla.");
     }
 
-    /** Quien ya tiene cuenta (por ejemplo, entró con Google) registra su organización. */
+    // Quien ya tiene cuenta (por ejemplo, entró con Google) registra su organización
     public function storeParaCuenta(OrganizacionRequest $request)
     {
         $org = $this->organizaciones->registrar($this->datosConLogo($request), $request->user());

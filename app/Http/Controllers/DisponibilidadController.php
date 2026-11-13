@@ -7,7 +7,7 @@ use App\Services\Reservas\DisponibilidadService;
 use App\Services\Reservas\ReservaService;
 use Illuminate\Http\Request;
 
-/** RF02 / HU03: disponibilidad real antes de reservar, sin recargar la página. */
+// Disponibilidad real antes de reservar, sin recargar la página
 class DisponibilidadController extends Controller
 {
     public function index(Request $request)
@@ -18,7 +18,7 @@ class DisponibilidadController extends Controller
         ]);
     }
 
-    /** JSON que la página consulta cada pocos segundos. */
+    // JSON que la página consulta cada pocos segundos
     public function agenda(Request $request, DisponibilidadService $disponibilidad)
     {
         $datos = $request->validate([
@@ -35,7 +35,7 @@ class DisponibilidadController extends Controller
         return response()->json(['fecha' => $datos['fecha'], 'actualizado' => now()->format('H:i:s'), 'objetos' => $agenda]);
     }
 
-    /** Vista semanal: la agenda de los 7 días de la semana de la fecha dada (lunes a domingo). */
+    // Agenda de toda la semana (lunes a domingo)
     public function semana(Request $request, DisponibilidadService $disponibilidad)
     {
         $datos = $request->validate([
@@ -73,7 +73,7 @@ class DisponibilidadController extends Controller
         ]);
     }
 
-    /** Revisa en vivo una solicitud mientras el usuario la arma (RF04, RF15). */
+    // Revisa en vivo una solicitud mientras el usuario la arma
     public function verificar(Request $request, DisponibilidadService $disponibilidad, ReservaService $reservas)
     {
         $datos = $request->validate([

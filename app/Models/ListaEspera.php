@@ -6,7 +6,7 @@ use App\Models\Concerns\PerteneceAOrganizacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** ListaDeEspera del diagrama (RF22): turno por orden de llegada. */
+// ListaDeEspera del diagrama: turno por orden de llegada
 class ListaEspera extends Model
 {
     use PerteneceAOrganizacion;
@@ -55,7 +55,7 @@ class ListaEspera extends Model
         return $this->created_at;
     }
 
-    /** Posición en la fila: cuántos se inscribieron antes para el mismo objeto, día y horario cruzado. */
+    // Posición en la fila de espera
     public function getPosicionAttribute(): ?int
     {
         if (! in_array($this->estado, ['esperando', 'notificada'], true)) {

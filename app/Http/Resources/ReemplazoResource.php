@@ -18,7 +18,7 @@ class ReemplazoResource extends JsonResource
                 'estado' => $this->prioritaria->estado,
                 'proposito' => $this->prioritaria->proposito?->only(['nombre', 'nivel_prioridad']),
             ]),
-            // Cada alternativa se acepta enviando su índice: POST /api/reemplazos/{id}/alternativa {"alternativa": 0}
+            // Cada alternativa se elige por su índice
             'alternativas' => $this->alternativas,
             'alternativa_elegida' => $this->alternativa_elegida,
             'respondido_at' => $this->respondido_at?->toIso8601String(),

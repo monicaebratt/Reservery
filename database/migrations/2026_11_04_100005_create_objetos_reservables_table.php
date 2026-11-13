@@ -4,10 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * ObjetoReservable (clase abstracta del diagrama). Espacio y Recurso se
- * distinguen por la columna "tipo" (herencia de tabla única).
- */
+// ObjetoReservable (clase abstracta del diagrama)
 return new class extends Migration
 {
     public function up(): void
@@ -17,11 +14,11 @@ return new class extends Migration
             $table->foreignId('organizacion_id')->constrained('organizaciones')->cascadeOnDelete();
             $table->string('nombre');
             $table->enum('tipo', ['espacio', 'recurso']);
-            $table->string('categoria', 60); // ej. Auditorio, Sala, Proyector: define qué es "equivalente" (RF19)
+            $table->string('categoria', 60);  // Ej: Auditorio, Sala, Proyector
             $table->text('descripcion')->nullable();
             $table->unsignedInteger('capacidad')->nullable();
             $table->string('ubicacion')->nullable();
-            $table->string('zona', 60)->nullable(); // sede o bloque: define "ubicación cercana" (RF19)
+            $table->string('zona', 60)->nullable();  // Sede o bloque
             $table->smallInteger('piso')->nullable();
             $table->string('imagen')->nullable();
             $table->boolean('disponible')->default(true);
@@ -29,7 +26,7 @@ return new class extends Migration
             $table->index(['organizacion_id', 'tipo', 'categoria']);
         });
 
-        // RF14: qué recursos se pueden reservar junto con cada espacio (paquetes)
+        // Qué recursos se pueden reservar junto con cada espacio (paquetes)
         Schema::create('espacio_recurso', function (Blueprint $table) {
             $table->id();
             $table->foreignId('espacio_id')->constrained('objetos_reservables')->cascadeOnDelete();
@@ -37,7 +34,7 @@ return new class extends Migration
             $table->unique(['espacio_id', 'recurso_id']);
         });
 
-        // RF06: rango de horario operativo por día de la semana
+        // Rango de horario operativo por día de la semana
         Schema::create('horarios_operativos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('objeto_reservable_id')->constrained('objetos_reservables')->cascadeOnDelete();

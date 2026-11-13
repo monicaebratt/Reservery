@@ -10,23 +10,14 @@ use App\Services\FestivosService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-/**
- * Motor de disponibilidad: responde si un conjunto de objetos está libre
- * (RF04, RF15) y arma la agenda de un día (RF02).
- */
+// Revisa disponibilidad y arma la agenda del día
 class DisponibilidadService
 {
     public function __construct(private FestivosService $festivos)
     {
     }
 
-    /**
-     * Revisa TODOS los objetos de la solicitud a la vez. Solo es disponible si
-     * cada uno está libre (reserva compuesta, RF15).
-     *
-     * @param  Collection<ObjetoReservable>|array  $objetos
-     * @param  array<int>  $ignorarReservas  reservas que no cuentan como conflicto (ej. la que se está editando)
-     */
+    // Revisa todos los objetos de la solicitud a la vez
     public function verificar($objetos, string $fecha, string $inicio, string $fin, array $ignorarReservas = []): ResultadoDisponibilidad
     {
         $resultado = new ResultadoDisponibilidad();
@@ -54,7 +45,7 @@ class DisponibilidadService
                 continue;
             }
 
-            // RF06: horario operativo
+            // Horario operativo
             $horario = $objeto->horarioDelDia($dia);
             if (! $horario) {
                 $resultado->agregar('fuera_de_horario', "{$objeto->nombre} no abre ese día.", $objeto);
@@ -63,7 +54,7 @@ class DisponibilidadService
                     "{$objeto->nombre} solo atiende de ".substr($horario->hora_inicio, 0, 5).' a '.substr($horario->hora_fin, 0, 5).'.', $objeto);
             }
 
-            // RF07: bloqueos por mantenimiento o eventos
+            // Bloqueos por mantenimiento o eventos
             $bloqueo = Bloqueo::withoutGlobalScopes()
                 ->where('objeto_reservable_id', $objeto->id)
                 ->queCruzan($fecha, $inicio, $fin)
@@ -72,7 +63,7 @@ class DisponibilidadService
                 $resultado->agregar('bloqueado', "{$objeto->nombre} está bloqueado: {$bloqueo->motivo}.", $objeto);
             }
 
-            // RF04: otras reservas activas en el mismo horario
+            // Otras reservas activas en el mismo horario
             $choques = Reserva::withoutGlobalScopes()->activas()
                 ->queCruzan($fecha, $inicio, $fin)
                 ->whereNotIn('reservas.id', $ignorarReservas)
@@ -86,11 +77,7 @@ class DisponibilidadService
         return $resultado;
     }
 
-    /**
-     * Agenda de un día por objeto: horario, franjas ocupadas y franjas libres (RF02).
-     *
-     * @param  array<int>|null  $objetoIds  null = todos los de la organización
-     */
+    // Agenda de un día por objeto: horario, franjas ocupadas y franjas libres
     public function agenda(?array $objetoIds, string $fecha, ?string $tipo = null, bool $verDetalle = false): array
     {
         $dia = Carbon::parse($fecha)->dayOfWeekIso;
@@ -160,7 +147,7 @@ class DisponibilidadService
         })->all();
     }
 
-    /** Si la fecha es hoy, lo que ya pasó no cuenta como libre. */
+    // Si la fecha es hoy, lo que ya pasó no cuenta como libre
     private function desdeAhora(string $fecha, string $abre): string
     {
         if ($fecha !== today()->toDateString()) {
@@ -170,7 +157,7 @@ class DisponibilidadService
         return max($abre, now()->format('H:i'));
     }
 
-    /** Resta las franjas ocupadas al horario de apertura. */
+    // Resta las franjas ocupadas al horario de apertura
     private function franjasLibres(string $abre, string $cierra, Collection $ocupado): array
     {
         $libres = [];

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
-/** RF07: inhabilitar fechas u horarios por mantenimiento o eventos. */
+// Inhabilitar fechas u horarios por mantenimiento o eventos
 class BloqueoController extends Controller
 {
     public function __construct(private InventarioService $inventario)

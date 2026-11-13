@@ -6,11 +6,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Consume un servicio web externo (API pública Nager.Date) para conocer los
- * festivos de Colombia: la organización puede cerrar esos días y el panel
- * muestra los próximos.
- */
+// Festivos de Colombia desde la API pública Nager.Date
 class FestivosService
 {
     private const URL = 'https://date.nager.at/api/v3/PublicHolidays';
@@ -42,11 +38,11 @@ class FestivosService
 
             return $festivos;
         } catch (\Throwable) {
-            return $this->sinServicio($clave); // Sin internet: la app sigue funcionando
+            return $this->sinServicio($clave);  // Sin internet: la app sigue funcionando
         }
     }
 
-    /** Si el servicio no responde, se recuerda por 10 minutos para no esperar en cada petición. */
+    // Si la API falla, se guarda 10 minutos para no esperar
     private function sinServicio(string $clave): array
     {
         Cache::put($clave, [], now()->addMinutes(10));

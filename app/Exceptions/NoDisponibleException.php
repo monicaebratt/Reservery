@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use App\Services\Reservas\ResultadoDisponibilidad;
 use RuntimeException;
 
-/** Se lanza cuando una solicitud no se puede reservar (RF04, RF15). */
+// Se lanza cuando una solicitud no se puede reservar
 class NoDisponibleException extends RuntimeException
 {
     public function __construct(public ResultadoDisponibilidad $resultado, public array $solicitud = [])

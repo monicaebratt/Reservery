@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** RF18: propuesta de reemplazo de una reserva por otra de mayor prioridad. */
+// Propuesta de reemplazo de una reserva por otra de mayor prioridad
 class Reemplazo extends Model
 {
     protected $fillable = [
@@ -28,11 +28,7 @@ class Reemplazo extends Model
         return $this->belongsTo(Reserva::class, 'reserva_afectada_id');
     }
 
-    /**
-     * Al buscar un reemplazo por la URL ({reemplazo}), solo se encuentran los
-     * de la organización del usuario: la reserva afectada tiene ese filtro (RNF06).
-     * Si es de otra organización responde 404 en la web y en la API.
-     */
+    // Si el reemplazo es de otra organización responde 404
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? $this->getRouteKeyName(), $value)->whereHas('afectada')->firstOrFail();

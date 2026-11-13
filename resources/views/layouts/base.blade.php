@@ -8,7 +8,7 @@
     <title>@yield('titulo', 'Inicio') · Reservery</title>
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
 
-    {{-- Marcellus: serif de remates abiertos, como el logo. Figtree: lectura de la interfaz. --}}
+    {{-- Fuentes: Marcellus para títulos y Figtree para el resto --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">

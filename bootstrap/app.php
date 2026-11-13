@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 : back()->with('error', $e->getMessage());
         });
 
-        // No disponible: la API responde 409 con los problemas (las alternativas las agrega el controlador)
+        // No disponible: la API responde 409
         $exceptions->render(function (NoDisponibleException $e, Request $request) {
             return $request->is('api/*') || $request->expectsJson()
                 ? response()->json(['mensaje' => $e->getMessage()] + $e->resultado->toArray(), 409)

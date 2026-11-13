@@ -7,14 +7,14 @@ use App\Services\Analitica\AnaliticaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-/** RF23, RF24 y RF25 por API (solo administradores). */
+// Por API (solo administradores)
 class AnaliticaApiController extends Controller
 {
     public function __construct(private AnaliticaService $analitica)
     {
     }
 
-    /** GET /api/analitica/ocupacion?desde&hasta&tipo */
+    // GET /api/analitica/ocupacion?desde&hasta&tipo
     public function ocupacion(Request $request)
     {
         [$desde, $hasta] = $this->periodo($request);
@@ -22,7 +22,7 @@ class AnaliticaApiController extends Controller
         return response()->json($this->analitica->ocupacion($request->user()->organizacion, $desde, $hasta, $request->query('tipo'))->toArray());
     }
 
-    /** GET /api/analitica/subutilizados?desde&hasta */
+    // GET /api/analitica/subutilizados?desde&hasta
     public function subutilizados(Request $request)
     {
         [$desde, $hasta] = $this->periodo($request);
@@ -31,7 +31,7 @@ class AnaliticaApiController extends Controller
         return response()->json(['umbral' => $reporte->umbralSubutilizacion, 'data' => $reporte->subutilizados()]);
     }
 
-    /** GET /api/analitica/demanda?desde&hasta&tipo&categoria */
+    // GET /api/analitica/demanda?desde&hasta&tipo&categoria
     public function demanda(Request $request)
     {
         [$desde, $hasta] = $this->periodo($request);
@@ -39,7 +39,7 @@ class AnaliticaApiController extends Controller
         return response()->json($this->analitica->demanda($request->user()->organizacion, $desde, $hasta, $request->query('tipo'), $request->query('categoria')));
     }
 
-    /** GET /api/analitica/reporte-pdf?desde&hasta — descarga el PDF */
+    // GET /api/analitica/reporte-pdf?desde&hasta — descarga el PDF
     public function pdf(Request $request)
     {
         [$desde, $hasta] = $this->periodo($request);

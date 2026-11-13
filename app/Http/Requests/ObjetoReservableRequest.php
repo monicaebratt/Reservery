@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** Inventario (RF10) con horario operativo (RF06) y recursos asociados (RF14). */
+// Inventario con horario operativo y recursos asociados
 class ObjetoReservableRequest extends FormRequest
 {
     public function authorize(): bool

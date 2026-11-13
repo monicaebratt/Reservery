@@ -7,7 +7,7 @@ use App\Services\Analitica\AnaliticaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
-/** RF23, RF24, RF25 / HU15–HU17: analítica para administradores. */
+// Analítica para administradores
 class AnaliticaController extends Controller
 {
     public function __construct(private AnaliticaService $analitica)
@@ -32,7 +32,7 @@ class AnaliticaController extends Controller
         ]);
     }
 
-    /** RF23: el reporte de ocupación en PDF. */
+    // El reporte de ocupación en PDF
     public function pdf(Request $request)
     {
         [$desde, $hasta] = $this->periodo($request);

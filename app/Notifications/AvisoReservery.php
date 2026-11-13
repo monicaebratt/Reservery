@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-/** Correo que acompaña cada notificación de Reservery (RF11). */
+// Correo que acompaña cada notificación de Reservery
 class AvisoReservery extends Notification
 {
     use Queueable;

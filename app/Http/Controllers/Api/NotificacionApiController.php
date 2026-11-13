@@ -7,10 +7,10 @@ use App\Http\Resources\NotificacionResource;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
 
-/** RF11 por API. */
+// Por API
 class NotificacionApiController extends Controller
 {
-    /** GET /api/notificaciones?sin_leer=1 */
+    // GET /api/notificaciones?sin_leer=1
     public function index(Request $request)
     {
         return NotificacionResource::collection(
@@ -20,7 +20,7 @@ class NotificacionApiController extends Controller
         )->additional(['sin_leer' => $request->user()->notificaciones()->where('leida', false)->count()]);
     }
 
-    /** PATCH /api/notificaciones/{id}/leer */
+    // PATCH /api/notificaciones/{id}/leer
     public function leer(Request $request, Notificacion $notificacion)
     {
         abort_unless($notificacion->user_id === $request->user()->id, 404);
@@ -29,7 +29,7 @@ class NotificacionApiController extends Controller
         return new NotificacionResource($notificacion);
     }
 
-    /** POST /api/notificaciones/leer-todas */
+    // POST /api/notificaciones/leer-todas
     public function leerTodas(Request $request)
     {
         $n = $request->user()->notificaciones()->where('leida', false)->update(['leida' => true]);

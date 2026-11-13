@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Services\CalendarioService;
 use Illuminate\Http\Request;
 
-/** RF26 por API. */
+// Por API
 class CalendarioApiController extends Controller
 {
-    /** GET /api/calendario?desde=2026-11-01&hasta=2026-11-30&objeto=3&tipo=espacio */
+    // GET /api/calendario?desde=2026-11-01&hasta=2026-11-30&objeto=3&tipo=espacio
     public function index(Request $request, CalendarioService $calendario)
     {
         $datos = $request->validate([

@@ -11,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\HasApiTokens;
 
-/** Debe confirmar su correo para que se le apliquen invitaciones con rol (seguridad). */
+// Debe confirmar su correo para que se le apliquen invitaciones con rol (seguridad)
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -52,15 +52,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ListaEspera::class);
     }
 
-    // ---------- Roles (RF12) ----------
+    // Roles
 
-    /** Cuenta que registró la organización. */
+    // Cuenta que registró la organización
     public function esOrganizacion(): bool
     {
         return $this->rol === 'organizacion';
     }
 
-    /** Administra espacios, recursos y solicitudes (la cuenta de la organización también puede). */
+    // Admin (la cuenta de la organización también cuenta)
     public function esAdmin(): bool
     {
         return in_array($this->rol, ['organizacion', 'admin'], true);
@@ -83,7 +83,7 @@ class User extends Authenticatable implements MustVerifyEmail
             : 'https://ui-avatars.com/api/?background=EDE5FF&color=8061C5&bold=true&name='.urlencode(trim(preg_replace('/[^\p{L}\s]/u', '', $this->name)) ?: 'R');
     }
 
-    /** Envía el correo de verificación sin romper el flujo si el correo falla. */
+    // Envía el correo de verificación sin romper el flujo si el correo falla
     public function enviarVerificacion(): void
     {
         if ($this->hasVerifiedEmail()) {

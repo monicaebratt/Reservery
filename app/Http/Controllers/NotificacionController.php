@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Notificacion;
 use Illuminate\Http\Request;
 
-/** RF11 / HU20: centro de notificaciones (la campana se actualiza sola). */
+// Centro de notificaciones (la campana se actualiza sola)
 class NotificacionController extends Controller
 {
     public function index(Request $request)
@@ -15,7 +15,7 @@ class NotificacionController extends Controller
         ]);
     }
 
-    /** La campana del menú pregunta esto cada 20 segundos. */
+    // La campana del menú pregunta esto cada 20 segundos
     public function contador(Request $request)
     {
         $usuario = $request->user();

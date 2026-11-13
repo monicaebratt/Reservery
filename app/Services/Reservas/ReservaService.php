@@ -15,10 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
-/**
- * Casos de uso de la reserva (RF03, RF04, RF05, RF08, RF13, RF15, RF18).
- * Lo usan por igual los controladores web y los de la API.
- */
+// Casos de uso de la reserva. Lo usan por igual los controladores web y los de la API
 class ReservaService
 {
     public function __construct(
@@ -28,23 +25,16 @@ class ReservaService
     ) {
     }
 
-    /**
-     * Crea una solicitud de reserva simple o compuesta.
-     *
-     * @param  array{proposito_id:int, fecha:string, hora_inicio:string, hora_fin:string, motivo:string, objetos:array<int>}  $datos
-     *
-     * @throws NoDisponibleException si algún componente no está libre y no se puede desplazar por prioridad
-     */
+    // Crea una solicitud de reserva simple o compuesta
     public function solicitar(User $usuario, array $datos): Reserva
     {
-        // RF03 y diagrama de casos de uso: solo el usuario realiza reservas; el administrador las gestiona
+        // Solo los usuarios reservan, el admin solo gestiona
         if ($usuario->esAdmin()) {
             throw new AuthorizationException('Los administradores gestionan las reservas pero no las realizan. Usa una cuenta de usuario.');
         }
 
         $reserva = DB::transaction(function () use ($usuario, $datos) {
-            // Bloquea las filas de los objetos para que dos solicitudes simultáneas
-            // no puedan quedarse con el mismo horario (RNF03)
+            // Bloquea las filas para que dos personas no reserven lo mismo a la vez
             $objetos = $this->cargarObjetos($datos['objetos'], bloquear: true);
             $this->validarPaquete($objetos);
             $proposito = Proposito::findOrFail($datos['proposito_id']);
@@ -53,7 +43,7 @@ class ReservaService
 
             $afectadas = collect();
             if (! $resultado->disponible()) {
-                // RF17: ¿solo choca con reservas de menor prioridad? Entonces puede desplazarlas
+                // ¿solo choca con reservas de menor prioridad? Entonces puede desplazarlas
                 $afectadas = $resultado->soloChocaConReservas()
                     ? $this->prioridad->desplazables($proposito, $resultado->reservasEnConflicto())
                     : null;
@@ -75,7 +65,7 @@ class ReservaService
             $reserva->objetos()->sync($objetos->pluck('id'));
             $reserva->registrar('creada', 'Solicitud para: '.$objetos->pluck('nombre')->join(', ').'.', $usuario);
 
-            // RF18: propone el reemplazo y avisa a los afectados con alternativas
+            // Propone el reemplazo y avisa a los afectados con alternativas
             if ($afectadas->isNotEmpty()) {
                 $this->prioridad->proponerReemplazos($reserva->load('proposito'), $afectadas);
             }
@@ -93,7 +83,7 @@ class ReservaService
             $reserva,
         );
 
-        // Si la organización no exige aprobación, se aprueba sola (salvo que desplace a otras: RF18)
+        // Si no se exige aprobación, se aprueba sola
         if (! $reserva->organizacion->requiere_aprobacion && $reserva->reemplazosPropuestos()->doesntExist()) {
             $reserva->aprobar(null, 'Aprobación automática: la organización no exige revisión.');
         }
@@ -101,7 +91,7 @@ class ReservaService
         return $reserva->fresh(['objetos', 'proposito', 'usuario']);
     }
 
-    /** Edita una reserva pendiente volviendo a validar la agenda. */
+    // Edita una reserva pendiente volviendo a validar la agenda
     public function actualizar(Reserva $reserva, User $usuario, array $datos): Reserva
     {
         $this->autorizarDueñoOAdmin($reserva, $usuario);
@@ -136,10 +126,7 @@ class ReservaService
         return $reserva->fresh(['objetos', 'proposito', 'usuario']);
     }
 
-    /**
-     * Aplica una acción del ciclo de vida (RF05). El patrón State decide si es válida.
-     * Solo el administrador aprueba, rechaza o completa; el dueño puede cancelar (RF08).
-     */
+    // Aplica una acción del ciclo de vida
     public function cambiarEstado(Reserva $reserva, string $accion, User $usuario, ?string $motivo = null): Reserva
     {
         if (! in_array($accion, Reserva::ACCIONES, true)) {
@@ -157,7 +144,7 @@ class ReservaService
         return $reserva->fresh(['objetos', 'proposito', 'usuario']);
     }
 
-    /** Elimina una reserva. Si estaba activa, primero se cancela para liberar el horario. */
+    // Elimina una reserva. Si estaba activa, primero se cancela para liberar el horario
     public function eliminar(Reserva $reserva, User $usuario): void
     {
         $this->autorizarDueñoOAdmin($reserva, $usuario);
@@ -169,12 +156,9 @@ class ReservaService
         $reserva->delete();
     }
 
-    // ---------- Reglas de la reserva compuesta ----------
+    // Reglas de la reserva compuesta
 
-    /**
-     * RF13 y RF14: como máximo un espacio por reserva, y los recursos que van
-     * con un espacio deben estar asociados a ese espacio (paquete válido).
-     */
+    // Máximo un espacio, y sus recursos deben ir con él
     public function validarPaquete(Collection $objetos): void
     {
         $espacios = $objetos->where('tipo', 'espacio');

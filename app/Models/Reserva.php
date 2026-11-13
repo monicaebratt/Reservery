@@ -16,10 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Contexto del patrón State (RF05). La reserva no decide si un cambio de
- * estado es válido: se lo delega al objeto de estado actual.
- */
+// Contexto del patrón State
 class Reserva extends Model
 {
     use PerteneceAOrganizacion;
@@ -43,17 +40,17 @@ class Reserva extends Model
         'completada' => Completada::class,
     ];
 
-    /** Estados que ocupan la agenda. */
+    // Estados que ocupan la agenda
     public const ACTIVOS = ['pendiente', 'aprobada'];
 
     public const ACCIONES = ['aprobar', 'rechazar', 'cancelar', 'completar'];
 
-    /** Quién hace el cambio y por qué; lo usa cambiarEstado() para la trazabilidad. */
+    // Quién hace el cambio y por qué; lo usa cambiarEstado para la trazabilidad
     private ?User $responsable = null;
 
     private ?string $motivoCambio = null;
 
-    // ---------- Relaciones ----------
+    // Relaciones
 
     public function usuario(): BelongsTo
     {
@@ -80,26 +77,26 @@ class Reserva extends Model
         return $this->hasMany(Notificacion::class);
     }
 
-    /** Reemplazos que esta reserva (de mayor prioridad) propone a otras. */
+    // Reemplazos que esta reserva (de mayor prioridad) propone a otras
     public function reemplazosPropuestos(): HasMany
     {
         return $this->hasMany(Reemplazo::class, 'reserva_prioritaria_id');
     }
 
-    /** Reemplazos que otras reservas le proponen a esta. */
+    // Reemplazos que otras reservas le proponen a esta
     public function reemplazosRecibidos(): HasMany
     {
         return $this->hasMany(Reemplazo::class, 'reserva_afectada_id');
     }
 
-    // ---------- Consultas ----------
+    // Consultas
 
     public function scopeActivas(Builder $q): Builder
     {
         return $q->whereIn('estado', self::ACTIVOS);
     }
 
-    /** Reservas que se cruzan con una fecha y un rango de horas. */
+    // Reservas que se cruzan con una fecha y un rango de horas
     public function scopeQueCruzan(Builder $q, string $fecha, string $inicio, string $fin): Builder
     {
         return $q->whereDate('fecha', $fecha)
@@ -107,7 +104,7 @@ class Reserva extends Model
             ->where('hora_fin', '>', $inicio);
     }
 
-    // ---------- Patrón State ----------
+    // Patrón State
 
     public function estadoActual(): EstadoReserva
     {
@@ -116,7 +113,7 @@ class Reserva extends Model
         return new $clase();
     }
 
-    /** Lo llaman los estados concretos para hacer la transición. */
+    // Lo llaman los estados concretos para hacer la transición
     public function cambiarEstado(EstadoReserva $nuevo): void
     {
         $anterior = $this->estado;
@@ -170,7 +167,7 @@ class Reserva extends Model
         return $this;
     }
 
-    // ---------- Trazabilidad (RNF08) ----------
+    // Trazabilidad
 
     public function registrar(string $accion, ?string $detalle = null, ?User $responsable = null, ?string $estadoAnterior = null): HistorialReserva
     {
@@ -183,7 +180,7 @@ class Reserva extends Model
         ]);
     }
 
-    // ---------- Presentación ----------
+    // Presentación
 
     public function getEspacioAttribute(): ?ObjetoReservable
     {

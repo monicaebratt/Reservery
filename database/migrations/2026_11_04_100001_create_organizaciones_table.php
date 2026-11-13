@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/** RF01.1: la organización se registra y configura su información básica. */
+// La organización se registra y configura su información básica
 return new class extends Migration
 {
     public function up(): void
@@ -24,14 +24,14 @@ return new class extends Migration
             $table->string('logo')->nullable();
             // Acceso de miembros
             $table->string('codigo_invitacion', 12)->unique();
-            // Configuración operativa por defecto (RF06)
+            // Configuración operativa por defecto
             $table->time('hora_apertura')->default('07:00');
             $table->time('hora_cierre')->default('19:00');
             $table->json('dias_operativos'); // 1 = lunes ... 7 = domingo
             $table->boolean('cerrar_en_festivos')->default(true);
             $table->boolean('requiere_aprobacion')->default(true);
-            $table->unsignedTinyInteger('umbral_subutilizacion')->default(20); // RF24, en %
-            // Mientras sea false, nadie más puede unirse (RF01.1)
+            $table->unsignedTinyInteger('umbral_subutilizacion')->default(20);  // En %
+            // Mientras sea false, nadie más puede unirse
             $table->boolean('configurada')->default(false);
             $table->timestamps();
         });

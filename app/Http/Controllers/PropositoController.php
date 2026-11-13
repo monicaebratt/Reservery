@@ -6,7 +6,7 @@ use App\Models\Proposito;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/** RF16 y RF17: propósitos y reglas de prioridad que configura el administrador. */
+// Propósitos y reglas de prioridad que configura el administrador
 class PropositoController extends Controller
 {
     public function index()
@@ -30,7 +30,7 @@ class PropositoController extends Controller
         return back()->with('ok', "Se actualizó la prioridad de {$proposito->nombre}.");
     }
 
-    /** Sube o baja un propósito un puesto intercambiando niveles con su vecino. */
+    // Sube o baja un propósito un puesto intercambiando niveles con su vecino
     public function mover(Proposito $proposito, string $direccion)
     {
         $vecino = Proposito::query()

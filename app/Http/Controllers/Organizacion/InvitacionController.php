@@ -7,7 +7,7 @@ use App\Models\Invitacion;
 use App\Services\Organizaciones\OrganizacionService;
 use Illuminate\Http\Request;
 
-/** RF01.2: autorizar correos con el rol que tendrán. */
+// Autorizar correos con el rol que tendrán
 class InvitacionController extends Controller
 {
     public function store(Request $request, OrganizacionService $organizaciones)

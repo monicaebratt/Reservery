@@ -6,14 +6,7 @@ use App\Models\ObjetoReservable;
 use App\Services\Reservas\DisponibilidadService;
 use Illuminate\Support\Collection;
 
-/**
- * Sustitución automática de recursos (RF19, RF20, RF21).
- *
- * Equivalente = mismo tipo y misma categoría, capacidad igual o mayor y
- * ubicación cercana (primero la misma zona, luego el piso más cercano).
- * En una reserva compuesta, cada alternativa es un PAQUETE completo que
- * respeta los recursos asociados al espacio y está libre en conjunto.
- */
+// Sustitución automática de recursos
 class SustitucionService
 {
     public function __construct(private DisponibilidadService $disponibilidad)
@@ -74,7 +67,7 @@ class SustitucionService
             $ids = $paquete->pluck('id')->sort()->values()->all();
             $pedidos = collect($objetoIds)->sort()->values()->all();
 
-            // RF21: el paquete completo debe estar libre al mismo tiempo
+            // El paquete completo debe estar libre al mismo tiempo
             if ($completo && $ids !== $pedidos
                 && $this->disponibilidad->verificar($paquete, $fecha, $inicio, $fin, $ignorar)->disponible()) {
                 $alternativas[] = [
@@ -89,7 +82,7 @@ class SustitucionService
         return collect($alternativas)->sortBy('puntaje')->take($limite)->values()->all();
     }
 
-    /** Objetos equivalentes, ordenados del más cercano al más lejano. */
+    // Objetos equivalentes, ordenados del más cercano al más lejano
     public function equivalentes(ObjetoReservable $objeto, int $maximo = 10): Collection
     {
         return ObjetoReservable::with(['horarios', 'organizacion', 'recursosAsociados'])
@@ -105,7 +98,7 @@ class SustitucionService
             ->values();
     }
 
-    /** Menor es mejor: misma zona, piso cercano y capacidad parecida. */
+    // Menor es mejor: misma zona, piso cercano y capacidad parecida
     private function distancia(ObjetoReservable $original, ObjetoReservable $candidato): int
     {
         if ($original->id === $candidato->id) {

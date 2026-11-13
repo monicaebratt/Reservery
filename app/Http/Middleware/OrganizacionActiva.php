@@ -6,10 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * RF01.1: nadie usa Reservery hasta pertenecer a una organización que ya
- * configuró sus datos básicos y habilitó el acceso.
- */
+// Solo deja pasar si la organización ya está habilitada
 class OrganizacionActiva
 {
     public function handle(Request $request, Closure $next): Response

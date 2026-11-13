@@ -12,16 +12,7 @@ use App\Services\Reservas\ReservaService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
-/**
- * Datos de demostración. Todas las contraseñas son "password".
- *
- *  - org@reservery.com      cuenta de la organización (rol organizacion)
- *  - admin@reservery.com    administrador
- *  - usuario@reservery.com  usuario
- *  - usuario2@reservery.com usuario
- *  - docente@reservery.com  usuario (pide los eventos institucionales)
- *  - colegio@reservery.com  organización registrada que aún no termina la configuración
- */
+// Datos de demostración
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
@@ -29,7 +20,7 @@ class DatabaseSeeder extends Seeder
         config(['reservery.notificar_por_correo' => false]);
         mt_srand(2026);
 
-        // ---------- Organización principal (configurada) ----------
+        // Organización principal (configurada)
         $org = Organizacion::create([
             'nombre' => 'Universidad Demo Reservery',
             'nit' => '900123456-7',
@@ -56,12 +47,12 @@ class DatabaseSeeder extends Seeder
         $docente = $this->usuario($org, 'Prof. Jorge Cárdenas', 'docente@reservery.com', 'usuario');
         $miembros = collect([$laura, $andres, $docente, $this->usuario($org, 'Sofía Mejía', 'sofia@reservery.com', 'usuario')]);
 
-        // RF01.2: un correo autorizado como administrador que aún no crea su cuenta
+        // Un correo autorizado como administrador que aún no crea su cuenta
         $org->invitaciones()->create(['email' => 'nuevo.admin@reservery.com', 'rol' => 'admin', 'invitado_por' => $cuentaOrg->id]);
 
         $p = $org->propositos()->pluck('id', 'nombre');
 
-        // ---------- Inventario (RF10) ----------
+        // Inventario
         $o = fn (string $nombre, string $tipo, string $categoria, ?int $cap, string $ubicacion, ?string $zona, ?int $piso, string $desc = '') => tap(
             ObjetoReservable::create([
                 'organizacion_id' => $org->id, 'nombre' => $nombre, 'tipo' => $tipo, 'categoria' => $categoria,
@@ -89,12 +80,12 @@ class DatabaseSeeder extends Seeder
         $mic2 = $o('Micrófono inalámbrico #2', 'recurso', 'Sonido', null, 'Almacén de equipos, Bloque A', 'Bloque A', 1);
         $kit = $o('Kit de balones', 'recurso', 'Implementos deportivos', null, 'Zona deportiva', 'Zona deportiva', 0);
 
-        // RF06: la cancha abre todos los días, más temprano y más tarde
+        // La cancha abre todos los días, más temprano y más tarde
         foreach (range(1, 7) as $d) {
             $cancha->horarios()->updateOrCreate(['dia_semana' => $d], ['hora_inicio' => '06:00', 'hora_fin' => '22:00']);
         }
 
-        // RF14: paquetes preaprobados (qué recursos van con cada espacio)
+        // Paquetes preaprobados (qué recursos van con cada espacio)
         $audPrincipal->recursosAsociados()->sync([$vb1->id, $vb2->id, $mic1->id, $mic2->id, $cam->id]);
         $audMenor->recursosAsociados()->sync([$vb1->id, $vb2->id, $mic1->id, $mic2->id, $cam->id]);
         foreach ([$sala201, $sala305, $salaC101] as $sala) {
@@ -105,8 +96,7 @@ class DatabaseSeeder extends Seeder
         }
         $cancha->recursosAsociados()->sync([$kit->id]);
 
-        // ---------- Historial de los últimos 60 días (para la analítica, RF23–RF25) ----------
-        // Paquetes frecuentes; la Sala C-101 y el kit de balones casi no se usan (aparecen como subutilizados, RF24)
+        // Historial de los últimos 60 días (para la analítica) paquetes frecuentes
         $espaciosHistoricos = [
             [$audPrincipal, $vb1, $mic1], [$audPrincipal, $mic2], [$audMenor, $vb2], [$sala201, $vb1], [$sala201, $pc1], [$sala201],
             [$sala305, $vb3], [$sala305, $pc2], [$lab1, $vb3], [$lab1], [$lab2, $pc1], [$cancha], [$audMenor, $cam],
@@ -142,7 +132,7 @@ class DatabaseSeeder extends Seeder
             $r->historial()->create(['accion' => $estado, 'estado_anterior' => 'pendiente', 'estado_nuevo' => $estado, 'responsable_id' => $admin->id, 'created_at' => $fecha]);
         }
 
-        // ---------- Reservas próximas (pasan por las reglas reales del sistema) ----------
+        // Reservas próximas (pasan por las reglas reales del sistema)
         $servicio = app(ReservaService::class);
         $dia = fn (int $n) => $this->diaHabil($n);
         $reservar = fn (User $u, array $objetos, string $proposito, Carbon $fecha, string $ini, string $fin, string $motivo) => $servicio->solicitar($u, [
@@ -150,7 +140,7 @@ class DatabaseSeeder extends Seeder
             'motivo' => $motivo, 'objetos' => collect($objetos)->pluck('id')->all(),
         ]);
 
-        // RF13: reserva compuesta (espacio + recursos)
+        // Reserva compuesta (espacio + recursos)
         $r1 = $reservar($andres, [$audPrincipal, $vb1, $mic1], 'Clase programada', $dia(2), '14:00', '16:00', 'Clase magistral de Ingeniería de Software');
         $r1->aprobar($admin);
         $reservar($laura, [$sala201, $vb2], 'Reunión de trabajo', $dia(1), '10:00', '12:00', 'Reunión del semillero de investigación');
@@ -163,24 +153,24 @@ class DatabaseSeeder extends Seeder
         $r6->aprobar($admin);
         $r6->cancelar($docente, 'Se aplazó el evento.');
 
-        // RF18: un evento institucional desplaza el "uso individual" de Laura en el laboratorio 1
+        // Un evento institucional desplaza el "uso individual" de Laura en el laboratorio 1
         $reservar($docente, [$lab1, $vb3], 'Evento institucional', $dia(3), '08:00', '12:00', 'Hackatón institucional');
 
-        // RF07: bloqueo por mantenimiento
+        // Bloqueo por mantenimiento
         Bloqueo::create([
             'organizacion_id' => $org->id, 'objeto_reservable_id' => $lab2->id, 'creado_por' => $admin->id,
             'fecha_inicio' => $dia(2)->setTime(7, 0), 'fecha_fin' => $dia(2)->setTime(13, 0),
             'motivo' => 'Mantenimiento de equipos',
         ]);
 
-        // RF22: Laura queda en lista de espera del auditorio principal ya reservado
+        // Laura queda en lista de espera del auditorio principal ya reservado
         app(ListaEsperaService::class)->inscribir($laura, [
             'proposito_id' => $p['Reunión de trabajo'], 'objetos' => [$audPrincipal->id],
             'fecha' => $dia(2)->toDateString(), 'hora_inicio' => '14:00', 'hora_fin' => '16:00',
             'motivo' => 'Asamblea de estudiantes',
         ]);
 
-        // ---------- Otra organización (para mostrar que los datos no se mezclan) ----------
+        // Otra organización (para mostrar que los datos no se mezclan)
         $pinos = Organizacion::create([
             'nombre' => 'Conjunto Residencial Los Pinos', 'tipo' => 'conjunto', 'ciudad' => 'Envigado',
             'correo_contacto' => 'administracion@lospinos.co', 'codigo_invitacion' => 'PINOS123',
@@ -192,7 +182,7 @@ class DatabaseSeeder extends Seeder
         $salon->aplicarHorarioPorDefecto();
         ObjetoReservable::create(['organizacion_id' => $pinos->id, 'nombre' => 'BBQ', 'tipo' => 'espacio', 'categoria' => 'Zona social', 'capacidad' => 20, 'ubicacion' => 'Terraza'])->aplicarHorarioPorDefecto();
 
-        // ---------- Organización registrada que aún no habilita el acceso (RF01.1) ----------
+        // Organización registrada que aún no habilita el acceso
         $colegio = Organizacion::create([
             'nombre' => 'Colegio Nuevo Horizonte', 'tipo' => 'colegio', 'correo_contacto' => 'rectoria@nuevohorizonte.edu.co',
             'codigo_invitacion' => 'COLEGIO1', 'configurada' => false,
@@ -208,7 +198,7 @@ class DatabaseSeeder extends Seeder
         ]);
     }
 
-    /** El n-ésimo día de lunes a sábado (sin festivos) a partir de mañana. */
+    // El n-ésimo día de lunes a sábado (sin festivos) a partir de mañana
     private function diaHabil(int $n): Carbon
     {
         $festivos = app(\App\Services\FestivosService::class);

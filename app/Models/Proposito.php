@@ -6,7 +6,7 @@ use App\Models\Concerns\PerteneceAOrganizacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** Propósito de la reserva y su nivel de prioridad (RF16, RF17). */
+// Propósito de la reserva y su nivel de prioridad
 class Proposito extends Model
 {
     use PerteneceAOrganizacion;

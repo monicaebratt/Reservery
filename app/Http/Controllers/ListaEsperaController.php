@@ -7,7 +7,7 @@ use App\Models\ListaEspera;
 use App\Services\ListaEspera\ListaEsperaService;
 use Illuminate\Http\Request;
 
-/** RF22 / HU14: lista de espera por orden de llegada. */
+// Lista de espera por orden de llegada
 class ListaEsperaController extends Controller
 {
     public function __construct(private ListaEsperaService $listaEspera)

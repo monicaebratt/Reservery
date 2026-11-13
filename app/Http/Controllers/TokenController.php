@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-/**
- * Permite al usuario crear y revocar tokens de Sanctum, y probar la API
- * desde la "consola API" (GET, POST, PUT y DELETE con cabecera Authorization).
- */
+// Tokens de la API y consola para probarla
 class TokenController extends Controller
 {
     public function __construct()
     {
-        // Herramienta de desarrollo: no existe para los clientes salvo que se active en el .env
+        // Solo existe si se activa en el .env
         abort_unless(config('reservery.consola_api'), 404);
     }
 

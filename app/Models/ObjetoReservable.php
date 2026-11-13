@@ -10,10 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * Clase "abstracta" ObjetoReservable del diagrama. Espacio y Recurso la
- * heredan (ver Espacio.php y Recurso.php) y comparten la misma tabla.
- */
+// Clase "abstracta" ObjetoReservable del diagrama
 class ObjetoReservable extends Model
 {
     use PerteneceAOrganizacion;
@@ -30,7 +27,7 @@ class ObjetoReservable extends Model
         return ['disponible' => 'boolean', 'capacidad' => 'integer', 'piso' => 'integer'];
     }
 
-    // ---------- Relaciones ----------
+    // Relaciones
 
     public function reservas(): BelongsToMany
     {
@@ -52,19 +49,19 @@ class ObjetoReservable extends Model
         return $this->hasMany(ListaEspera::class, 'objeto_reservable_id');
     }
 
-    /** RF14: recursos que se pueden reservar junto con este espacio. */
+    // Recursos que se pueden reservar junto con este espacio
     public function recursosAsociados(): BelongsToMany
     {
         return $this->belongsToMany(ObjetoReservable::class, 'espacio_recurso', 'espacio_id', 'recurso_id');
     }
 
-    /** RF14: espacios con los que se puede reservar este recurso. */
+    // Espacios con los que se puede reservar este recurso
     public function espaciosAsociados(): BelongsToMany
     {
         return $this->belongsToMany(ObjetoReservable::class, 'espacio_recurso', 'recurso_id', 'espacio_id');
     }
 
-    // ---------- Consultas ----------
+    // Consultas
 
     public function scopeEspacios(Builder $q): Builder
     {
@@ -86,13 +83,13 @@ class ObjetoReservable extends Model
         return $this->tipo === 'espacio';
     }
 
-    /** consultarDisponibilidad() del diagrama de clases (RF02). */
+    // ConsultarDisponibilidad del diagrama de clases
     public function consultarDisponibilidad(string $fecha): array
     {
         return app(DisponibilidadService::class)->agenda([$this->id], $fecha)[0] ?? [];
     }
 
-    /** Horario operativo de un día (1 = lunes ... 7 = domingo) o null si ese día no abre. */
+    // Horario operativo de un día (1 = lunes ... 7 = domingo) o null si ese día no abre
     public function horarioDelDia(int $dia): ?HorarioOperativo
     {
         return $this->relationLoaded('horarios')
@@ -100,7 +97,7 @@ class ObjetoReservable extends Model
             : $this->horarios()->where('dia_semana', $dia)->first();
     }
 
-    /** Crea el horario de lunes a domingo a partir de la configuración de la organización. */
+    // Crea el horario de lunes a domingo a partir de la configuración de la organización
     public function aplicarHorarioPorDefecto(): void
     {
         $org = $this->organizacion;
@@ -116,7 +113,7 @@ class ObjetoReservable extends Model
     {
         return $this->imagen
             ? Storage::disk('public')->url($this->imagen)
-            : asset($this->tipo === 'recurso' ? 'img/recurso.svg' : 'img/espacio.svg'); // ilustración por defecto
+            : asset($this->tipo === 'recurso' ? 'img/recurso.svg' : 'img/espacio.svg');  // Ilustración por defecto
     }
 
     public function getTipoNombreAttribute(): string

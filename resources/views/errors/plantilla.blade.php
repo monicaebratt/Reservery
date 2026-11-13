@@ -1,4 +1,4 @@
-{{-- Plantilla común de las páginas de error: la mascota calendario de Reservery con el código --}}
+{{-- Plantilla de las páginas de error --}}
 @extends('layouts.base')
 
 @section('titulo', $titulo)
@@ -9,8 +9,8 @@
 <style>
     .error-pagina { position: relative; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: linear-gradient(180deg, #FBFAFF 0%, #F6F1FF 100%); }
     .error-cabecera { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 1.6rem 2.5rem; }
-    .error-cabecera .marca .icono { width: 46px; }
-    .error-cabecera .marca .texto { width: 118px; }
+    .error-cabecera .marca .icono { height: 34px; width: auto; }
+    .error-cabecera .marca .texto { height: 28px; width: auto; }
     .pildora-inicio { display: inline-flex; align-items: center; gap: .5rem; background: var(--rv-panel); color: var(--rv-profundo); border-radius: 999px; padding: .6rem 1.2rem; font-weight: 600; text-decoration: none; }
     .pildora-inicio:hover { background: #E2D6FF; color: var(--rv-profundo); }
     .pildora-inicio i { color: var(--rv-violeta); }
@@ -18,7 +18,7 @@
     .error-centro { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 1.25rem 4rem; }
     .ilustracion { width: min(480px, 92vw); height: auto; margin-bottom: .75rem; animation: flotar 4s ease-in-out infinite;
     }
-    /* Ilustraciones en PNG con fondo transparente */
+    // Ilustraciones en PNG con fondo transparente
     .ilustracion.cuadrada { width: auto; height: min(300px, 36vh); max-width: 86vw; }
     .mascota { width: min(380px, 86vw); height: auto; margin-bottom: .5rem; }
     .mascota .flota { animation: flotar 4s ease-in-out infinite; transform-origin: 185px 150px; }
@@ -32,7 +32,7 @@
     .enlace-explorar { color: var(--rv-profundo); font-weight: 500; text-decoration: none; display: inline-flex; gap: .4rem; align-items: center; }
     .enlace-explorar:hover { color: var(--rv-violeta); }
 
-    /* Nubes y órbitas de fondo */
+    // Nubes y órbitas de fondo
     .nube { position: absolute; bottom: -60px; width: 420px; height: 220px; z-index: 1; pointer-events: none; }
     .nube::before, .nube::after { content: ""; position: absolute; border-radius: 50%; background: #EBE1FF; }
     .nube.izq { left: -90px; } .nube.der { right: -90px; transform: scaleX(-1); }

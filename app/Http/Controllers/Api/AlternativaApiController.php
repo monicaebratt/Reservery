@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Services\Sustitucion\SustitucionService;
 use Illuminate\Http\Request;
 
-/** RF19, RF21: buscar equivalentes libres para una solicitud. */
+// Buscar equivalentes libres para una solicitud
 class AlternativaApiController extends Controller
 {
-    /** POST /api/alternativas {objetos[], fecha, hora_inicio, hora_fin} */
+    // POST /api/alternativas {objetos[], fecha, hora_inicio, hora_fin}
     public function buscar(Request $request, SustitucionService $sustitucion)
     {
         $datos = $request->validate([
@@ -25,7 +25,7 @@ class AlternativaApiController extends Controller
 
         return response()->json([
             'data' => $alternativas,
-            'milisegundos' => round((microtime(true) - $inicio) * 1000), // RNF02: menos de 5 segundos
+            'milisegundos' => round((microtime(true) - $inicio) * 1000),
         ]);
     }
 }

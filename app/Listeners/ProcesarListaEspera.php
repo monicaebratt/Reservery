@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\ReservaCambioDeEstado;
 use App\Services\ListaEspera\ListaEsperaService;
 
-/** HU05 y RF22: al cancelar o rechazar, el horario se libera y se avisa a la lista de espera. */
+// Al cancelar o rechazar, el horario se libera y se avisa a la lista de espera
 class ProcesarListaEspera
 {
     public function __construct(private ListaEsperaService $listaEspera)

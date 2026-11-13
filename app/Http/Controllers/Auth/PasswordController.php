@@ -17,7 +17,7 @@ class PasswordController extends Controller
         return view('auth.forgot-password');
     }
 
-    /** Envía al correo el enlace para restablecer la contraseña. */
+    // Envía al correo el enlace para restablecer la contraseña
     public function sendLink(Request $request)
     {
         $request->validate(['email' => ['required', 'email']]);

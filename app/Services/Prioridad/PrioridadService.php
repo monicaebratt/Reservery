@@ -15,14 +15,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Priorización por propósito (RF16, RF17, RF18).
- *
- * Una solicitud puede ocupar un horario ya tomado solo si TODAS las reservas
- * con las que choca tienen un propósito de menor prioridad. En ese caso se
- * propone el reemplazo: los afectados reciben aviso y alternativas, y el
- * cambio solo se confirma cuando el administrador aprueba la solicitud prioritaria.
- */
+// Priorización por propósito
 class PrioridadService
 {
     public function __construct(
@@ -32,7 +25,7 @@ class PrioridadService
     ) {
     }
 
-    /** Devuelve las reservas desplazables, o una colección vacía si alguna tiene igual o mayor prioridad. */
+    // Reservas que se pueden desplazar por prioridad
     public function desplazables(Proposito $proposito, Collection $reservaIds): Collection
     {
         $reservas = Reserva::with('proposito')->whereIn('id', $reservaIds)->get();
@@ -43,13 +36,13 @@ class PrioridadService
         return $todasMenores ? $reservas : collect();
     }
 
-    /** RF18: registra la propuesta, busca alternativas y avisa a los afectados y a los administradores. */
+    // Registra el reemplazo y avisa a los afectados
     public function proponerReemplazos(Reserva $prioritaria, Collection $afectadas): void
     {
         foreach ($afectadas as $afectada) {
             $afectada->loadMissing(['objetos', 'proposito', 'usuario']);
 
-            // Alternativas para el afectado en su mismo horario, sin contar la reserva que lo desplaza
+            // Alternativas para el afectado en su mismo horario
             $alternativas = $this->sustitucion->buscarAlternativas(
                 $afectada->objetos->pluck('id')->all(),
                 $afectada->fecha->toDateString(), $afectada->hora_inicio, $afectada->hora_fin,
@@ -86,7 +79,7 @@ class PrioridadService
         );
     }
 
-    /** El afectado elige una de las alternativas ofrecidas: su reserva cambia de objetos (sustitución, RF20). */
+    // El afectado elige una alternativa y su reserva cambia de objeto
     public function aceptarAlternativa(Reemplazo $reemplazo, User $usuario, int $indice): Reemplazo
     {
         $afectada = $reemplazo->afectada()->with('objetos')->firstOrFail();
@@ -101,7 +94,7 @@ class PrioridadService
             $objetos = \App\Models\ObjetoReservable::with('horarios', 'organizacion')
                 ->whereIn('id', $alternativa['objetos'])->lockForUpdate()->get();
 
-            // RF21: el paquete alternativo debe seguir libre completo
+            // El paquete alternativo debe seguir libre completo
             $resultado = $this->disponibilidad->verificar($objetos, $afectada->fecha->toDateString(), $afectada->hora_inicio, $afectada->hora_fin, [$afectada->id]);
             if (! $resultado->disponible()) {
                 throw new NoDisponibleException($resultado);
@@ -129,7 +122,7 @@ class PrioridadService
         return $reemplazo->fresh();
     }
 
-    /** El afectado acepta ceder su horario sin alternativa. */
+    // El afectado acepta ceder su horario sin alternativa
     public function aceptarSinAlternativa(Reemplazo $reemplazo, User $usuario): Reemplazo
     {
         $this->autorizarAfectado($reemplazo, $usuario);
@@ -139,7 +132,7 @@ class PrioridadService
         return $reemplazo->fresh();
     }
 
-    /** Al aprobarse la reserva prioritaria: se confirman los reemplazos (RF18). */
+    // Al aprobarse la reserva prioritaria: se confirman los reemplazos
     public function confirmar(Reserva $prioritaria, ?User $responsable): void
     {
         foreach ($prioritaria->reemplazosPropuestos()->with('afectada')->get() as $reemplazo) {
@@ -157,7 +150,7 @@ class PrioridadService
         }
     }
 
-    /** Si la prioritaria se rechaza o cancela: los afectados conservan su reserva. */
+    // Si la prioritaria se rechaza o cancela: los afectados conservan su reserva
     public function descartar(Reserva $prioritaria): void
     {
         foreach ($prioritaria->reemplazosPropuestos()->with('afectada.usuario')->get() as $reemplazo) {

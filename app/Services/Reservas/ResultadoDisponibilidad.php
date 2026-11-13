@@ -4,7 +4,7 @@ namespace App\Services\Reservas;
 
 use Illuminate\Support\Collection;
 
-/** Resultado de validar una solicitud contra la agenda (RF04, RF06, RF07, RF15). */
+// Resultado de validar una solicitud contra la agenda
 class ResultadoDisponibilidad
 {
     /** @var array<int, array{objeto_id:?int, objeto:?string, tipo:string, detalle:string, reservas:array}> */
@@ -26,14 +26,14 @@ class ResultadoDisponibilidad
         return $this->problemas === [];
     }
 
-    /** True si lo único que impide reservar son otras reservas (no bloqueos, horario o festivos). */
+    // True si solo la ocupan otras reservas
     public function soloChocaConReservas(): bool
     {
         return ! $this->disponible()
             && collect($this->problemas)->every(fn ($p) => $p['tipo'] === 'ocupado');
     }
 
-    /** Ids de las reservas con las que choca. */
+    // Ids de las reservas con las que choca
     public function reservasEnConflicto(): Collection
     {
         return collect($this->problemas)->pluck('reservas')->flatten()->unique()->values();

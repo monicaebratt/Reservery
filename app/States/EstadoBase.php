@@ -5,10 +5,7 @@ namespace App\States;
 use App\Exceptions\TransicionInvalidaException;
 use App\Models\Reserva;
 
-/**
- * Por defecto toda acción está prohibida. Cada estado concreto solo
- * sobrescribe las transiciones que sí le están permitidas.
- */
+// Por defecto toda acción está prohibida
 abstract class EstadoBase implements EstadoReserva
 {
     public function aprobar(Reserva $reserva): void

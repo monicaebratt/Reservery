@@ -1,9 +1,4 @@
-{{--
-    Reserva simple o compuesta en un solo formulario (RNF04).
-    Al elegir un espacio solo se muestran los recursos asociados a él (RF14).
-    El horario se elige tocando franjas libres de la agenda real (RF02),
-    y mientras se llena se verifica en vivo que TODO esté libre (RF04, RF15).
---}}
+{{-- Reserva simple o compuesta en un solo formulario --}}
 @csrf
 @php
     $seleccion = old('objetos', $reserva->exists ? $reserva->objetos->pluck('id')->all() : array_filter([(int) ($preseleccion['objeto'] ?? 0)]));
@@ -16,7 +11,6 @@
 
 <div class="row g-4">
     <div class="col-xl-7 d-flex flex-column gap-4">
-        {{-- Paso 1 --}}
         <section class="card">
             <div class="card-body">
                 <div class="paso-titulo"><span class="num">1</span> ¿Qué necesitas?</div>
@@ -60,7 +54,6 @@
             </div>
         </section>
 
-        {{-- Paso 2 --}}
         <section class="card">
             <div class="card-body">
                 <div class="paso-titulo"><span class="num">2</span> ¿Para qué es?</div>
@@ -86,7 +79,7 @@
         </section>
     </div>
 
-    {{-- Paso 3: horario --}}
+    {{-- Horario --}}
     <div class="col-xl-5">
         <section class="card position-sticky" style="top: 20px">
             <div class="card-body">
@@ -144,7 +137,7 @@
         const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
         const objetosElegidos = () => [$('espacio_id').value, ...[...document.querySelectorAll('input[name="recursos[]"]:checked')].map(c => c.value)].filter(Boolean);
 
-        // ---------- Paso 1: espacio y recursos (RF14) ----------
+        // Espacio y recursos
         function mostrarEspacio() {
             const op = $('espacio_id').selectedOptions[0];
             const hay = !!$('espacio_id').value;
@@ -173,7 +166,7 @@
             $('ayudaRecursos').textContent = espacio ? '· los que se pueden usar en este espacio' : '· recursos sueltos';
         }
 
-        // ---------- Paso 3: días de la semana y franjas libres ----------
+        // Días de la semana y franjas libres
         function pintarSemana() {
             const f = new Date($('fecha').value + 'T00:00');
             const lunes = new Date(f); lunes.setDate(f.getDate() - ((f.getDay() + 6) % 7));
@@ -219,7 +212,7 @@
             } catch (e) { /* se reintenta al cambiar algo */ }
         }
 
-        // Franjas de una hora libres para TODOS los objetos elegidos (RF15)
+        // Franjas de una hora libres para todos los objetos elegidos
         let libresPorHora = [];
         function pintarFranjas(objetos) {
             const cerrado = objetos.find(o => !o.disponible || o.festivo || !o.horario);
@@ -266,9 +259,9 @@
             const fin = $('hora_fin').value ? minutos($('hora_fin').value) : null;
             if (ini !== null && fin === m) {                 // alarga hacia adelante
                 $('hora_fin').value = hora(m + 60);
-            } else if (ini !== null && m + 60 === ini) {      // alarga hacia atrás
+            } else if (ini !== null && m + 60 === ini) {  // Alarga hacia atrás
                 $('hora_inicio').value = hora(m);
-            } else {                                          // empieza de nuevo
+            } else {  // Empieza de nuevo
                 $('hora_inicio').value = hora(m);
                 $('hora_fin').value = hora(m + 60);
             }
@@ -276,7 +269,7 @@
             programar();
         });
 
-        // ---------- Verificación en vivo (RF04, RF15) ----------
+        // Verificación en vivo
         let temporizador;
         function programar() { clearTimeout(temporizador); temporizador = setTimeout(verificar, 350); }
 

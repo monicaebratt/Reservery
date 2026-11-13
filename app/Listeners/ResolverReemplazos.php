@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\ReservaCambioDeEstado;
 use App\Services\Prioridad\PrioridadService;
 
-/** RF18: aprobar la reserva prioritaria confirma el reemplazo; rechazarla lo descarta. */
+// Aprobar la reserva prioritaria confirma el reemplazo; rechazarla lo descarta
 class ResolverReemplazos
 {
     public function __construct(private PrioridadService $prioridad)

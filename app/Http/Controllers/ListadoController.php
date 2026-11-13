@@ -6,7 +6,7 @@ use App\Models\ObjetoReservable;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 
-/** Listados con DataTables (búsqueda, orden y paginación en el navegador). */
+// Listados con DataTables (búsqueda, orden y paginación en el navegador)
 class ListadoController extends Controller
 {
     public function reservas(Request $request)

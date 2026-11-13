@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-/** RF01.2: la organización asigna o revoca el rol de administrador en cualquier momento. */
+// La organización asigna o revoca el rol de administrador en cualquier momento
 class MiembroController extends Controller
 {
     public function index(Request $request)

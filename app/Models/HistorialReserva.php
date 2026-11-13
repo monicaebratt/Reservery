@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** RNF08: cada cambio de una reserva con fecha, hora y responsable. */
+// Cada cambio de una reserva con fecha, hora y responsable
 class HistorialReserva extends Model
 {
     protected $table = 'historial_reservas';

@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Organizacion;
 
-/**
- * Aísla los datos de cada organización (RNF06): quien inicia sesión solo
- * ve y modifica registros de su propia organización, en la web y en la API.
- */
+// Cada organización solo ve sus propios datos
 trait PerteneceAOrganizacion
 {
     protected static function bootPerteneceAOrganizacion(): void

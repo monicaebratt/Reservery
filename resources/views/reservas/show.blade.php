@@ -49,7 +49,7 @@
         </div>
 
         @if ($reserva->reemplazosPropuestos->isNotEmpty())
-            {{-- RF18: esta reserva desplaza a otras de menor prioridad --}}
+            {{-- Esta reserva desplaza a otras de menor prioridad --}}
             <div class="card border-warning">
                 <div class="card-header">Reservas que desplaza por prioridad</div>
                 <ul class="list-group list-group-flush">
@@ -72,7 +72,7 @@
         <div class="card">
             <div class="card-header">Historial de cambios</div>
             <div class="card-body">
-                {{-- RNF08: cada cambio con fecha, hora y responsable --}}
+                {{-- Cada cambio con fecha, hora y responsable --}}
                 <ul class="historial mb-0">
                     @foreach ($reserva->historial as $h)
                         <li>
