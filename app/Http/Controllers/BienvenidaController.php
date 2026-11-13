@@ -6,7 +6,7 @@ use App\Models\Organizacion;
 use App\Services\Organizaciones\OrganizacionService;
 use Illuminate\Http\Request;
 
-/** Quien tiene cuenta pero aún no pertenece a una organización habilitada. */
+// Quien tiene cuenta pero aún no pertenece a una organización habilitada
 class BienvenidaController extends Controller
 {
     public function index(Request $request)

@@ -10,10 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Laravel\Socialite\Facades\Socialite;
 
-/**
- * Inicio de sesión y registro con Google (Laravel Socialite).
- * Si el correo ya existe, se vincula; si no, se crea la cuenta.
- */
+// Inicio de sesión y registro con Google (Laravel Socialite)
 class GoogleController extends Controller
 {
     public function redirect(Request $request)
@@ -47,9 +44,8 @@ class GoogleController extends Controller
                 'google_id' => $usuario->google_id ?? $google->getId(),
                 'foto' => $usuario->foto ?? $google->getAvatar(),
             ];
-            // Google confirma que el correo es de esta persona. Si la cuenta no lo
-            // había confirmado, se borra la contraseña que puso quien la creó.
-            if (! $usuario->hasVerifiedEmail()) {
+            // Google solo confirma su propio correo
+            if (! $usuario->hasVerifiedEmail() && $usuario->email === mb_strtolower($google->getEmail())) {
                 $datos += ['email_verified_at' => now(), 'password' => null];
             }
             $usuario->forceFill($datos)->save();

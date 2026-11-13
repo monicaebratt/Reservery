@@ -87,7 +87,7 @@
 </div>
 
 <div class="row g-4 mb-4">
-    {{-- RF23 + RF24 --}}
+    {{-- + --}}
     <div class="col-12">
         <div class="card h-100">
             <div class="card-header">Ocupación por espacio o recurso <small class="text-muted fw-normal">· en gris, los que están por debajo de {{ $reporte->umbralSubutilizacion }}%</small></div>
@@ -96,7 +96,7 @@
     </div>
 </div>
 
-{{-- RF25: horarios y días de mayor demanda --}}
+{{-- Horarios y días de mayor demanda --}}
 <div class="row g-4 mb-4">
     <div class="col-xl-8">
         <div class="card h-100">

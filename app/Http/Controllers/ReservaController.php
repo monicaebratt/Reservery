@@ -11,16 +11,14 @@ use App\Services\Reservas\ReservaService;
 use App\Services\Sustitucion\SustitucionService;
 use Illuminate\Http\Request;
 
-/**
- * Reservas en la web. Toda la lógica vive en ReservaService, el mismo que usa la API.
- */
+// Reservas en la web. Toda la lógica vive en ReservaService, el mismo que usa la API
 class ReservaController extends Controller
 {
     public function __construct(private ReservaService $reservas)
     {
     }
 
-    /** RF09 / HU06: historial con el estado actual, ordenado por fecha. El admin ve todas (HU19). */
+    // Historial con el estado actual, ordenado por fecha. El admin ve todas
     public function index(Request $request)
     {
         $usuario = $request->user();
@@ -50,7 +48,7 @@ class ReservaController extends Controller
         return view('reservas.index', compact('reservas', 'verTodas', 'pestana', 'buscar'));
     }
 
-    /** RNF04: espacio + recursos + propósito en un solo formulario. */
+    // Espacio + recursos + propósito en un solo formulario
     public function create(Request $request)
     {
         return view('reservas.create', $this->datosFormulario($request) + ['reserva' => new Reserva()]);
@@ -61,7 +59,7 @@ class ReservaController extends Controller
         try {
             $reserva = $this->reservas->solicitar($request->user(), $request->datos());
         } catch (NoDisponibleException $e) {
-            // RF19/RF20: se guardan los datos y se muestran alternativas o la lista de espera
+            // Se guardan los datos y se muestran alternativas o la lista de espera
             session(['solicitud_no_disponible' => ['datos' => $request->datos(), 'problemas' => $e->resultado->problemas]]);
 
             return redirect()->route('reservas.no-disponible');
@@ -76,7 +74,7 @@ class ReservaController extends Controller
         return redirect()->route('reservas.show', $reserva)->with('ok', $mensaje);
     }
 
-    /** RF19, RF20, RF21, RF22: alternativas equivalentes o lista de espera. */
+    // Alternativas equivalentes o lista de espera
     public function noDisponible(SustitucionService $sustitucion)
     {
         $solicitud = session('solicitud_no_disponible');
@@ -131,7 +129,7 @@ class ReservaController extends Controller
         return redirect()->route('reservas.index')->with('ok', 'Reserva eliminada.');
     }
 
-    /** RF05 con el patrón State: aprobar, rechazar, cancelar o completar. */
+    // Con el patrón State: aprobar, rechazar, cancelar o completar
     public function cambiarEstado(Request $request, Reserva $reserva, string $accion)
     {
         $motivo = $request->validate(['motivo' => ['nullable', 'string', 'max:255']])['motivo'] ?? null;
@@ -148,7 +146,7 @@ class ReservaController extends Controller
             'propositos' => Proposito::orderByDesc('nivel_prioridad')->get(),
             'espacios' => $espacios,
             'recursos' => ObjetoReservable::recursos()->disponibles()->orderBy('categoria')->orderBy('nombre')->get(),
-            // Mapa espacio => recursos permitidos (RF14), para que el formulario solo muestre combinaciones válidas
+            // Qué recursos puede llevar cada espacio
             'paquetes' => $espacios->mapWithKeys(fn ($e) => [$e->id => $e->recursosAsociados->pluck('id')]),
             'preseleccion' => $request->query(),
         ];

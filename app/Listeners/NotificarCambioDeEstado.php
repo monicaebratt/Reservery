@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\ReservaCambioDeEstado;
 use App\Services\Notificaciones\NotificacionService;
 
-/** RF11 / HU20: toda transición de estado notifica a los involucrados. */
+// Toda transición de estado notifica a los involucrados
 class NotificarCambioDeEstado
 {
     public function __construct(private NotificacionService $notificaciones)
@@ -31,7 +31,7 @@ class NotificarCambioDeEstado
             ->concat($this->notificaciones->administradoresDe($reserva->organizacion_id))
             ->reject(fn ($u) => $e->responsable && $u->id === $e->responsable->id);
 
-        // Los administradores solo reciben las cancelaciones; aprobaciones y demás le importan al dueño
+        // Los administradores solo reciben las cancelaciones;
         if ($e->nuevo !== 'cancelada') {
             $destinatarios = $destinatarios->where('id', $reserva->user_id);
         }

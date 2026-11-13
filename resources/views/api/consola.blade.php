@@ -107,7 +107,7 @@
 
     const proposito = {{ \App\Models\Proposito::orderBy('nivel_prioridad')->value('id') ?? 1 }};
     const objeto = {{ \App\Models\ObjetoReservable::espacios()->value('id') ?? 1 }};
-    let ultima = {{ auth()->user()->reservas()->latest('id')->value('id') ?? 1 }}; // se actualiza al crear una
+    let ultima = {{ auth()->user()->reservas()->latest('id')->value('id') ?? 1 }};  // Se actualiza al crear una
     const solicitud = (ini, fin, motivo) => ({ proposito_id: proposito, fecha: manana, hora_inicio: ini, hora_fin: fin, motivo, objetos: [objeto] });
     const ejemplos = () => ({
         listar:       ['GET', '/api/reservas', ''],
@@ -150,7 +150,7 @@
             $('estado').className = 'badge text-bg-' + (res.ok ? 'success' : 'danger');
             try {
                 const json = JSON.parse(texto);
-                // Si se acaba de crear una reserva, los ejemplos de editar, cancelar y eliminar la usan
+                // Los ejemplos usan la última reserva creada
                 if (metodo === 'POST' && $('ruta').value === '/api/reservas' && json.data?.id) ultima = json.data.id;
                 $('respuesta').textContent = JSON.stringify(json, null, 2);
             }

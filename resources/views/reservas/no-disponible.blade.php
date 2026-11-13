@@ -25,7 +25,7 @@
                             </div>
                         @endforeach
                     </div>
-                    {{-- RF20: el usuario elige la alternativa; se envía la misma solicitud con los nuevos objetos --}}
+                    {{-- Al elegir una alternativa se envía la misma solicitud --}}
                     <form method="POST" action="{{ route('reservas.store') }}">
                         @csrf
                         @foreach (['proposito_id', 'fecha', 'hora_inicio', 'hora_fin', 'motivo'] as $campo)

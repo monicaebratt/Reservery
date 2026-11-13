@@ -22,10 +22,9 @@ class AppServiceProvider extends ServiceProvider
         // Paginación con estilos de Bootstrap
         Paginator::useBootstrapFive();
 
-        // Máximo 5 intentos por minuto en cada formulario de acceso (login, registro,
-        // contraseña, código), por IP. Frena a quien prueba contraseñas una tras otra.
+        // Máximo 5 intentos por minuto por correo e IP
         RateLimiter::for('acceso', fn (Request $request) => Limit::perMinute(5)
-            ->by($request->path().'|'.$request->ip())
+            ->by($request->path().'|'.mb_strtolower((string) $request->input('email')).'|'.$request->ip())
             ->response(fn () => $request->expectsJson()
                 ? response()->json(['mensaje' => 'Demasiados intentos. Espera un minuto e inténtalo de nuevo.'], 429)
                 : back()->withErrors(['email' => 'Demasiados intentos. Espera un minuto e inténtalo de nuevo.'])->withInput($request->except('password'))));

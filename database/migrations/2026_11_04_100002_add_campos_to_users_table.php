@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('organizacion_id')->nullable()->after('id')
                 ->constrained('organizaciones')->nullOnDelete();
-            // organizacion = cuenta que registró la organización; admin; usuario (RF12)
+            // Organizacion = cuenta que registró la organización; admin; usuario
             $table->enum('rol', ['organizacion', 'admin', 'usuario'])->default('usuario')->after('password');
             $table->string('telefono', 30)->nullable()->after('rol');
             $table->string('foto')->nullable()->after('telefono');

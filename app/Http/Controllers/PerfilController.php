@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
-/** El usuario que inició sesión edita su propia información (RNF06: solo la suya). */
+// El usuario que inició sesión edita su propia información (: solo la suya)
 class PerfilController extends Controller
 {
     public function edit(Request $request)
@@ -46,7 +46,7 @@ class PerfilController extends Controller
         return back()->with('ok', 'Tu perfil se actualizó.');
     }
 
-    /** Quien entró con Google y nunca tuvo contraseña puede crear una sin escribir la actual. */
+    // Si entró con Google puede crear contraseña sin la actual
     public function updatePassword(Request $request)
     {
         $usuario = $request->user();

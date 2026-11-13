@@ -6,7 +6,7 @@ use App\Models\ObjetoReservable;
 use App\Services\CalendarioService;
 use Illuminate\Http\Request;
 
-/** RF26 / HU18: calendario centralizado de todas las reservas activas. */
+// Calendario centralizado de todas las reservas activas
 class CalendarioController extends Controller
 {
     public function index()
@@ -16,7 +16,7 @@ class CalendarioController extends Controller
         ]);
     }
 
-    /** FullCalendar pide los eventos del rango visible. */
+    // FullCalendar pide los eventos del rango visible
     public function eventos(Request $request, CalendarioService $calendario)
     {
         $datos = $request->validate([

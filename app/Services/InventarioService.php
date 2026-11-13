@@ -12,10 +12,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-/**
- * Gestión del inventario (RF10), horario operativo (RF06), paquetes
- * espacio + recursos (RF14) y bloqueos (RF07).
- */
+// Gestión del inventario, horario operativo, paquetes espacio + recursos y bloqueos
 class InventarioService
 {
     public function __construct(private ListaEsperaService $listaEspera)
@@ -78,7 +75,7 @@ class InventarioService
         $objeto->delete();
     }
 
-    /** Reservas activas que quedarían dentro de un bloqueo. */
+    // Reservas activas que quedarían dentro de un bloqueo
     public function reservasAfectadas(array $objetoIds, Carbon $inicio, Carbon $fin)
     {
         return Reserva::with(['objetos', 'usuario'])->activas()
@@ -90,10 +87,7 @@ class InventarioService
             ->values();
     }
 
-    /**
-     * RF07: crea un bloqueo por cada objeto. Si se pide, cancela las reservas
-     * que caen dentro (la cancelación pasa por el patrón State y notifica).
-     */
+    // Crea un bloqueo por cada objeto
     public function bloquear(array $objetoIds, Carbon $inicio, Carbon $fin, string $motivo, User $por, bool $cancelarAfectadas): array
     {
         return DB::transaction(function () use ($objetoIds, $inicio, $fin, $motivo, $por, $cancelarAfectadas) {
@@ -118,7 +112,7 @@ class InventarioService
         });
     }
 
-    /** Quitar un bloqueo libera ese horario: se revisa la lista de espera. */
+    // Quitar un bloqueo libera ese horario: se revisa la lista de espera
     public function desbloquear(Bloqueo $bloqueo): void
     {
         $bloqueo->delete();

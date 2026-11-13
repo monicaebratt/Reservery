@@ -28,7 +28,7 @@
                                 <td>{{ $m->reservas_count }}</td>
                                 <td class="text-end text-nowrap">
                                     @unless ($m->esOrganizacion())
-                                        {{-- RF01.2: asignar o revocar el rol de administrador --}}
+                                        {{-- Asignar o revocar el rol de administrador --}}
                                         <form method="POST" action="{{ route('miembros.rol', $m) }}" class="d-inline">
                                             @csrf @method('PATCH')
                                             @if ($m->rol === 'admin')

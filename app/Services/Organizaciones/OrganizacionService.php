@@ -10,14 +10,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
-/**
- * Registro y configuración de la organización (RF01.1) y gestión de
- * roles de sus miembros (RF01.2). La cuenta que registra la organización
- * queda con rol "organizacion".
- */
+// Registro y configuración de la organización y gestión de roles de sus miembros
 class OrganizacionService
 {
-    /** registrarOrganizacion(): crea la organización y su cuenta. */
+    // RegistrarOrganizacion: crea la organización y su cuenta
     public function registrar(array $datosOrganizacion, User $cuenta): Organizacion
     {
         if ($cuenta->organizacion_id) {
@@ -32,7 +28,7 @@ class OrganizacionService
         });
     }
 
-    /** configurarDatosBasicos(). */
+    // configurarDatosBasicos()
     public function configurar(Organizacion $org, array $datos): Organizacion
     {
         $org->update($datos);
@@ -40,7 +36,7 @@ class OrganizacionService
         return $org->fresh();
     }
 
-    /** Habilita el acceso de usuarios y administradores (RF01.1). */
+    // Habilita el acceso de usuarios y administradores
     public function habilitar(Organizacion $org): Organizacion
     {
         $faltan = collect([
@@ -69,7 +65,7 @@ class OrganizacionService
         return $org->fresh();
     }
 
-    /** Un usuario sin organización se une con el código de invitación. */
+    // Un usuario sin organización se une con el código de invitación
     public function unirseConCodigo(User $usuario, string $codigo): Organizacion
     {
         if ($usuario->organizacion_id) {
@@ -85,9 +81,7 @@ class OrganizacionService
             throw ValidationException::withMessages(['codigo' => 'Esa organización todavía no habilita el acceso de sus miembros.']);
         }
 
-        // Si su correo fue invitado con rol admin, se respeta ese rol,
-        // pero solo si ya confirmó que el correo es suyo (si no, entra como usuario
-        // y el rol se aplica cuando lo confirme)
+        // El rol de la invitación solo se aplica con el correo confirmado
         $invitacion = $org->invitaciones()->where('email', mb_strtolower($usuario->email))->whereNull('aceptada_at')->first();
         if ($invitacion && $usuario->hasVerifiedEmail()) {
             $this->aplicarInvitacion($usuario, $invitacion);
@@ -98,7 +92,7 @@ class OrganizacionService
         return $org;
     }
 
-    /** Si el correo del usuario tiene una invitación pendiente en una organización habilitada, lo une. */
+    // Si su correo tiene una invitación pendiente, lo une
     public function unirsePorInvitacion(User $usuario): ?Organizacion
     {
         // Sin correo confirmado, cualquiera podría registrarse con un correo ajeno
@@ -116,10 +110,7 @@ class OrganizacionService
         return $invitacion ? $this->aplicarInvitacion($usuario, $invitacion) : null;
     }
 
-    /**
-     * RF01.2: asigna un rol a un correo. Si el correo ya es miembro, el cambio
-     * aplica de inmediato; si no, queda invitado con ese rol.
-     */
+    // Asigna un rol a un correo
     public function invitar(Organizacion $org, string $email, string $rol, User $por): array
     {
         $email = mb_strtolower(trim($email));
@@ -140,7 +131,7 @@ class OrganizacionService
             ['rol' => $rol, 'invitado_por' => $por->id, 'aceptada_at' => null],
         );
 
-        // Si ya tenía cuenta sin organización y la organización está habilitada, entra de una vez
+        // Si ya tenía cuenta, entra de una vez
         if ($usuario && $org->configurada && $usuario->hasVerifiedEmail()) {
             $this->aplicarInvitacion($usuario, $invitacion);
 
@@ -156,11 +147,7 @@ class OrganizacionService
         return ['estado' => 'invitado', 'invitacion' => $invitacion];
     }
 
-    /**
-     * Al confirmar el correo: aplica la invitación pendiente de ese correo.
-     * Si no tenía organización, lo une; si ya entró con el código a esa misma
-     * organización, recibe el rol con que fue invitado.
-     */
+    // Al confirmar el correo: aplica la invitación pendiente de ese correo
     public function aplicarInvitacionVerificada(User $usuario): ?Organizacion
     {
         if (! $usuario->hasVerifiedEmail()) {

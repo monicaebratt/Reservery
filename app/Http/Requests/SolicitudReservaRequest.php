@@ -6,11 +6,7 @@ use App\Models\ObjetoReservable;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/**
- * Validación de una solicitud de reserva, igual para la web y la API.
- * Se puede enviar "espacio_id" + "recursos[]" (reserva compuesta en un solo
- * paso, RNF04) o directamente "objetos[]".
- */
+// Validación de una solicitud de reserva, igual para la web y la API
 class SolicitudReservaRequest extends FormRequest
 {
     public function authorize(): bool

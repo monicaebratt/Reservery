@@ -1,4 +1,4 @@
-{{-- Inventario (RF10) + horario operativo (RF06) + recursos asociados para paquetes (RF14) --}}
+{{-- Inventario + horario operativo + recursos asociados para paquetes --}}
 @csrf
 <div class="row g-4">
     <div class="col-xl-7">

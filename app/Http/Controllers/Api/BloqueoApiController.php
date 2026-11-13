@@ -10,23 +10,20 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 
-/** RF07 por API. */
+// Por API
 class BloqueoApiController extends Controller
 {
     public function __construct(private InventarioService $inventario)
     {
     }
 
-    /** GET /api/bloqueos */
+    // GET /api/bloqueos
     public function index()
     {
         return BloqueoResource::collection(Bloqueo::with(['objeto', 'creador'])->where('fecha_fin', '>=', now())->orderBy('fecha_inicio')->get());
     }
 
-    /**
-     * POST /api/bloqueos {objetos[], fecha_inicio, fecha_fin, motivo, cancelar_afectadas?}
-     * Si hay reservas dentro y no se envía cancelar_afectadas, responde 409 con la lista.
-     */
+    // Crea un bloqueo; si hay reservas dentro avisa antes de cancelarlas
     public function store(Request $request)
     {
         $datos = $request->validate([
@@ -57,7 +54,7 @@ class BloqueoApiController extends Controller
         ], 201);
     }
 
-    /** DELETE /api/bloqueos/{id} */
+    // DELETE /api/bloqueos/{id}
     public function destroy(Bloqueo $bloqueo)
     {
         $this->inventario->desbloquear($bloqueo);

@@ -6,7 +6,7 @@ use App\Models\Concerns\PerteneceAOrganizacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** RF07: inhabilita un objeto entre dos fechas/horas. */
+// Inhabilita un objeto entre dos fechas/horas
 class Bloqueo extends Model
 {
     use PerteneceAOrganizacion;
@@ -28,7 +28,7 @@ class Bloqueo extends Model
         return $this->belongsTo(User::class, 'creado_por');
     }
 
-    /** Bloqueos que se cruzan con una fecha y un rango de horas. */
+    // Bloqueos que se cruzan con una fecha y un rango de horas
     public function scopeQueCruzan($q, string $fecha, string $inicio, string $fin)
     {
         return $q->where('fecha_inicio', '<', "{$fecha} {$fin}")

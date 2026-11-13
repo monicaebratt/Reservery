@@ -6,10 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-/**
- * ReporteDeOcupación del diagrama de clases (RF23, RF24): un periodo, una
- * tasa de ocupación global y una fila por espacio o recurso.
- */
+// Reporte de ocupación de un periodo
 class ReporteDeOcupacion
 {
     public function __construct(
@@ -25,7 +22,7 @@ class ReporteDeOcupacion
         return $this->desde->format('d/m/Y').' al '.$this->hasta->format('d/m/Y');
     }
 
-    /** Horas reservadas sobre horas operativas de todos los objetos. */
+    // Horas reservadas sobre horas operativas de todos los objetos
     public function tasaOcupacion(): float
     {
         $operativas = $this->filas->sum('horas_operativas');
@@ -33,13 +30,13 @@ class ReporteDeOcupacion
         return $operativas > 0 ? round($this->filas->sum('horas_reservadas') / $operativas * 100, 1) : 0.0;
     }
 
-    /** RF24: objetos por debajo del umbral configurado por la organización. */
+    // Objetos por debajo del umbral configurado por la organización
     public function subutilizados(): Collection
     {
         return $this->filas->where('subutilizado', true)->values();
     }
 
-    /** generarReporte(): el PDF descargable. */
+    // GenerarReporte: el PDF descargable
     public function generarReporte(string $organizacion, string $generadoPor)
     {
         return Pdf::loadView('reportes.ocupacion', [

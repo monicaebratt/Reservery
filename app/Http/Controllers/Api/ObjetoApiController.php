@@ -10,14 +10,14 @@ use App\Services\InventarioService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/** RF10, RF06 y RF14 por API. */
+// Por API
 class ObjetoApiController extends Controller
 {
     public function __construct(private InventarioService $inventario)
     {
     }
 
-    /** GET /api/objetos?tipo=espacio&categoria=Auditorio */
+    // GET /api/objetos?tipo=espacio&categoria=Auditorio
     public function index(Request $request)
     {
         return ObjetoResource::collection(
@@ -28,13 +28,13 @@ class ObjetoApiController extends Controller
         );
     }
 
-    /** GET /api/objetos/{id} */
+    // GET /api/objetos/{id}
     public function show(ObjetoReservable $objeto)
     {
         return new ObjetoResource($objeto->load(['horarios', 'recursosAsociados']));
     }
 
-    /** POST /api/objetos (multipart si trae imagen) */
+    // POST /api/objetos (multipart si trae imagen)
     public function store(ObjetoReservableRequest $request)
     {
         $objeto = $this->inventario->guardar(null, $request->datos(),
@@ -44,7 +44,7 @@ class ObjetoApiController extends Controller
         return (new ObjetoResource($objeto))->response()->setStatusCode(201);
     }
 
-    /** PUT /api/objetos/{id} */
+    // PUT /api/objetos/{id}
     public function update(ObjetoReservableRequest $request, ObjetoReservable $objeto)
     {
         $objeto = $this->inventario->guardar($objeto, $request->datos(),
@@ -55,7 +55,7 @@ class ObjetoApiController extends Controller
         return new ObjetoResource($objeto);
     }
 
-    /** DELETE /api/objetos/{id} */
+    // DELETE /api/objetos/{id}
     public function destroy(ObjetoReservable $objeto)
     {
         $this->inventario->eliminar($objeto);
@@ -63,7 +63,7 @@ class ObjetoApiController extends Controller
         return response()->json(['mensaje' => 'Se eliminó del inventario.']);
     }
 
-    /** PUT /api/objetos/{id}/horarios {horarios: {1: {abre, inicio, fin}, ...}} — RF06 */
+    // PUT /api/objetos/{id}/horarios {horarios: {1: {abre, inicio, fin}, ...}}
     public function horarios(Request $request, ObjetoReservable $objeto)
     {
         $request->validate([
@@ -77,7 +77,7 @@ class ObjetoApiController extends Controller
         return new ObjetoResource($objeto->load(['horarios', 'recursosAsociados']));
     }
 
-    /** PUT /api/objetos/{id}/recursos {recursos: [ids]} — RF14 paquetes */
+    // PUT /api/objetos/{id}/recursos {recursos: [ids]}
     public function recursos(Request $request, ObjetoReservable $objeto)
     {
         abort_unless($objeto->esEspacio(), 422, 'Solo los espacios tienen recursos asociados.');

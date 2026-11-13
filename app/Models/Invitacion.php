@@ -6,7 +6,7 @@ use App\Models\Concerns\PerteneceAOrganizacion;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Correo autorizado por la organización con el rol que tendrá al unirse (RF01.2). */
+// Correo autorizado por la organización con el rol que tendrá al unirse
 class Invitacion extends Model
 {
     use PerteneceAOrganizacion;

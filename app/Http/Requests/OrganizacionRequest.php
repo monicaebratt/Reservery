@@ -6,7 +6,7 @@ use App\Models\Organizacion;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/** Datos básicos y configuración de la organización (RF01.1). */
+// Datos básicos y configuración de la organización
 class OrganizacionRequest extends FormRequest
 {
     public function authorize(): bool

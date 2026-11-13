@@ -1,4 +1,3 @@
-{{-- Maestra de la zona privada. Hereda de la maestra base. --}}
 @extends('layouts.base')
 
 @section('cuerpo')
@@ -83,7 +82,7 @@
             <div class="cabecera-acciones">
                 @yield('acciones')
                 @if ($activa && Route::has('notificaciones.contador'))
-                    {{-- Campana: se actualiza sola cada 20 segundos (RF11) --}}
+                    {{-- Campana: se actualiza sola cada 20 segundos --}}
                     <div class="dropdown">
                         <button class="btn-icono position-relative" data-bs-toggle="dropdown" aria-label="Notificaciones">
                             <i class="bi bi-bell"></i>
@@ -107,7 +106,7 @@
         <main class="cuerpo">
             @include('partials.alertas')
             @if ($usuario->esOrganizacion() && ! $activa && ! request()->routeIs('organizacion.edit'))
-                {{-- RF01.1: hasta habilitar el acceso solo se ve la configuración --}}
+                {{-- Hasta habilitar el acceso solo se ve la configuración --}}
                 <div class="tarjeta-marca d-flex flex-wrap align-items-center gap-3 mb-4" style="min-height:0">
                     <div class="me-auto">
                         <div class="fw-bold">Tu organización aún no está habilitada</div>

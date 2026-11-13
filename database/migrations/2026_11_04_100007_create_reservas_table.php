@@ -31,7 +31,7 @@ return new class extends Migration
             $table->unique(['reserva_id', 'objeto_reservable_id']);
         });
 
-        // RNF08: trazabilidad de cada cambio con fecha, hora y responsable
+        // Trazabilidad de cada cambio con fecha, hora y responsable
         Schema::create('historial_reservas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('reserva_id')->constrained('reservas')->cascadeOnDelete();

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Password;
 
-/** Registro e inicio de sesión de usuarios y administradores (RF01, HU01, HU02). */
+// Registro e inicio de sesión de usuarios y administradores
 class AuthController extends Controller
 {
     public function showLogin()
@@ -25,7 +25,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        // HU02: el mensaje no revela si falló el correo o la contraseña
+        // El mensaje no revela si falló el correo o la contraseña
         if (! Auth::attempt($credenciales, $request->boolean('remember'))) {
             return back()
                 ->withErrors(['email' => 'El correo o la contraseña no son correctos.'])
@@ -42,11 +42,7 @@ class AuthController extends Controller
         return view('auth.register', ['codigo' => $request->query('codigo')]);
     }
 
-    /**
-     * HU01: correo y contraseña válidos, sin duplicados, y queda autenticado.
-     * Se une a su organización con el código de invitación o porque su correo
-     * fue invitado (RF01.2). Si no trae ninguno, elige después en la bienvenida.
-     */
+    // Correo y contraseña válidos, sin duplicados, y queda autenticado
     public function register(Request $request, OrganizacionService $organizaciones)
     {
         $datos = $request->validate([

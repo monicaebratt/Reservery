@@ -57,7 +57,7 @@
 
 @push('scripts')
 <script>
-    // RF02 / HU03: la agenda se consulta al servidor cada 15 segundos sin recargar la página
+    // La agenda se consulta al servidor cada 15 segundos sin recargar la página
     const INICIO = 6 * 60, FIN = 22 * 60;
     const PUEDE_RESERVAR = {{ $puedeReservar ? 'true' : 'false' }};
     const URL_CREAR = '{{ url('reservas/create') }}';
@@ -90,7 +90,7 @@
         }
     }
 
-    // ---------- Semana: espacios × días ----------
+    // Semana: espacios × días
     function pintarSemana(d) {
         $('rango').textContent = d.rango;
         if (!d.objetos.length) { $('vistaSemana').innerHTML = '<p class="text-muted text-center py-5 mb-0">No hay espacios ni recursos con ese filtro.</p>'; return; }
@@ -130,7 +130,7 @@
         }).join('') + (items.length > 4 ? `<span class="small text-muted d-block text-center">+${items.length - 4} más</span>` : '');
     }
 
-    // ---------- Día: línea de tiempo ----------
+    // Día: línea de tiempo
     function pintarDia(d) {
         const f = new Date(d.fecha + 'T00:00');
         $('rango').textContent = f.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'short' });
@@ -159,7 +159,7 @@
             </div>${linea}</div>`;
     }
 
-    // ---------- Controles ----------
+    // Controles
     function mover(dias) {
         const f = new Date($('fecha').value + 'T00:00');
         f.setDate(f.getDate() + dias);

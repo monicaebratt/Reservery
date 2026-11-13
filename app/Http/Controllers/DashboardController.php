@@ -24,10 +24,10 @@ class DashboardController extends Controller
             'enEspera' => $usuario->listaEspera()->activas()->count(),
             'proximas' => $base()->with(['objetos', 'proposito'])->activas()
                 ->whereDate('fecha', '>=', today())->orderBy('fecha')->orderBy('hora_inicio')->take(6)->get(),
-            // Para el admin: solicitudes por revisar (HU19)
+            // Para el admin: solicitudes por revisar
             'porRevisar' => $esAdmin ? Reserva::with(['objetos', 'usuario', 'proposito'])->where('estado', 'pendiente')
                 ->orderBy('fecha')->orderBy('hora_inicio')->take(5)->get() : collect(),
-            // Para el usuario: propuestas de reemplazo sin responder (HU11)
+            // Para el usuario: propuestas de reemplazo sin responder
             'reemplazos' => Reemplazo::with(['prioritaria.proposito', 'afectada.objetos'])->where('estado', 'propuesto')
                 ->whereHas('afectada', fn ($q) => $q->where('user_id', $usuario->id))->get(),
             'notificaciones' => $usuario->notificaciones()->latest()->take(4)->get(),

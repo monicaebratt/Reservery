@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/** RF01.2: la organización autoriza correos y les asigna rol. */
+// La organización autoriza correos y les asigna rol
 return new class extends Migration
 {
     public function up(): void

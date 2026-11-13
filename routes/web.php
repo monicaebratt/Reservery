@@ -14,25 +14,17 @@ use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Página pública
-|--------------------------------------------------------------------------
-*/
+// Página pública
 Route::view('/', 'welcome')->name('inicio');
 
-/*
-|--------------------------------------------------------------------------
-| Autenticación (solo visitantes) — RF01, HU01, HU02
-|--------------------------------------------------------------------------
-*/
+// Autenticación (solo visitantes)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:acceso');
     Route::get('/registro', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registro', [AuthController::class, 'register'])->middleware('throttle:acceso');
 
-    // RF01.1: una organización se registra junto con su cuenta
+    // Una organización se registra junto con su cuenta
     Route::get('/registro-organizacion', [OrganizacionController::class, 'create'])->name('organizacion.create');
     Route::post('/registro-organizacion', [OrganizacionController::class, 'store'])->middleware('throttle:acceso')->name('organizacion.store');
 
@@ -43,39 +35,35 @@ Route::middleware('guest')->group(function () {
     Route::post('/restablecer-contrasena', [PasswordController::class, 'reset'])->middleware('throttle:acceso')->name('password.update');
 });
 
-// Inicio de sesión con Google (sirve para entrar, registrarse o registrar una organización)
+// Inicio de sesión con Google
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback'])->name('google.callback');
 
-// Confirmar el correo (necesario para recibir una invitación con rol)
+// Confirmar el correo
 Route::get('/correo/verificar/{id}/{hash}', [VerificacionController::class, 'verificar'])
     ->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    // Pantalla "Confirma tu correo": hasta confirmarlo no se puede usar nada más
+    // Hasta confirmar el correo no se puede usar nada más
     Route::get('/correo/confirmar', [VerificacionController::class, 'aviso'])->name('verification.notice');
     Route::post('/correo/reenviar', [VerificacionController::class, 'reenviar'])
         ->middleware('throttle:3,1')->name('verification.send');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Con sesión, pero aún sin organización habilitada
-|--------------------------------------------------------------------------
-*/
+// Con sesión, pero aún sin organización habilitada
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bienvenida', [BienvenidaController::class, 'index'])->name('bienvenida');
     Route::post('/bienvenida/unirse', [BienvenidaController::class, 'unirse'])->middleware('throttle:acceso')->name('bienvenida.unirse');
     Route::post('/bienvenida/organizacion', [OrganizacionController::class, 'storeParaCuenta'])->name('bienvenida.organizacion');
 
-    // RF01.1: la cuenta de la organización configura sus datos aunque aún no esté habilitada
+    // La organización se configura aunque aún no esté habilitada
     Route::middleware('rol:organizacion')->group(function () {
         Route::get('/organizacion', [OrganizacionController::class, 'edit'])->name('organizacion.edit');
         Route::put('/organizacion', [OrganizacionController::class, 'update'])->name('organizacion.update');
         Route::post('/organizacion/habilitar', [OrganizacionController::class, 'habilitar'])->name('organizacion.habilitar');
         Route::post('/organizacion/codigo', [OrganizacionController::class, 'regenerarCodigo'])->name('organizacion.codigo');
 
-        // RF01.2: asignar o revocar el rol de administrador
+        // Asignar o revocar el rol de administrador
         Route::get('/organizacion/miembros', [MiembroController::class, 'index'])->name('miembros.index');
         Route::patch('/organizacion/miembros/{miembro}/rol', [MiembroController::class, 'cambiarRol'])->name('miembros.rol');
         Route::delete('/organizacion/miembros/{miembro}', [MiembroController::class, 'destroy'])->name('miembros.destroy');
@@ -84,22 +72,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| Zona privada: sesión iniciada y organización habilitada
-|--------------------------------------------------------------------------
-*/
+// Zona privada: sesión iniciada y organización habilitada
 Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Disponibilidad en tiempo real (RF02, HU03)
+    // Disponibilidad en tiempo real
     Route::get('/disponibilidad', [DisponibilidadController::class, 'index'])->name('disponibilidad.index');
     Route::get('/disponibilidad/agenda', [DisponibilidadController::class, 'agenda'])->name('disponibilidad.agenda');
     Route::get('/disponibilidad/semana', [DisponibilidadController::class, 'semana'])->name('disponibilidad.semana');
     Route::post('/disponibilidad/verificar', [DisponibilidadController::class, 'verificar'])->name('disponibilidad.verificar');
 
-    // Reservas simples y compuestas (RF03–RF05, RF08, RF09, RF13, RF15, RF16)
-    // Solo los usuarios realizan reservas (RF03); el administrador las gestiona
+    // Reservas simples y compuestas solo los usuarios realizan reservas
     Route::middleware('rol:usuario')->group(function () {
         Route::get('/reservas/no-disponible', [ReservaController::class, 'noDisponible'])->name('reservas.no-disponible');
         Route::get('/reservas/create', [ReservaController::class, 'create'])->name('reservas.create');
@@ -115,8 +98,7 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::post('/api-tokens', [TokenController::class, 'store'])->name('api.tokens.store');
     Route::delete('/api-tokens/{id}', [TokenController::class, 'destroy'])->name('api.tokens.destroy');
 
-    // ===== Isabella: inventario, bloqueos, calendario, listados y lista de espera =====
-    // Inventario de espacios y recursos 
+    // Inventario de espacios y recursos
     Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
         ->parameters(['objetos' => 'objeto'])->except(['index', 'show'])->middleware('rol:admin');    
     Route::resource('objetos', \App\Http\Controllers\ObjetoReservableController::class)        
@@ -145,8 +127,6 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::post('/lista-espera/{entrada}/convertir', [\App\Http\Controllers\ListaEsperaController::class, 'convertir'])->name('lista-espera.convertir');    
     Route::delete('/lista-espera/{entrada}', [\App\Http\Controllers\ListaEsperaController::class, 'destroy'])->name('lista-espera.destroy');
 
-
-    // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
     // Notificaciones
     Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index'])->name('notificaciones.index');    
     Route::get('/notificaciones/contador', [\App\Http\Controllers\NotificacionController::class, 'contador'])->name('notificaciones.contador');    
@@ -159,7 +139,7 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::put('/perfil/contrasena', [\App\Http\Controllers\PerfilController::class, 'updatePassword'])->name('perfil.password');    
     Route::delete('/perfil/foto', [\App\Http\Controllers\PerfilController::class, 'destroyFoto'])->name('perfil.foto.destroy');
 
-    //Propositos y regla de prioridad
+    // Propositos y regla de prioridad
     Route::middleware('rol:admin')->group(function () {        
 Route::get('/propositos', [\App\Http\Controllers\PropositoController::class, 'index'])->name('propositos.index');        
 Route::post('/propositos', [\App\Http\Controllers\PropositoController::class, 'store'])->name('propositos.store');        

@@ -6,7 +6,7 @@
 <h1 class="titulo-pagina mb-2">¡Hola, {{ $usuario->name }}!</h1>
 
 @if ($usuario->organizacion_id)
-    {{-- Pertenece a una organización que aún no habilita el acceso (RF01.1) --}}
+    {{-- Pertenece a una organización que aún no habilita el acceso --}}
     <div class="card card-body mt-3">
         <div class="paso">
             <span class="paso-icono bg-warning-subtle text-warning-emphasis"><i class="bi bi-hourglass-split"></i></span>

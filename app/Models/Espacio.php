@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 
-/** Espacio: hereda de ObjetoReservable (sala, auditorio, cancha, laboratorio...). */
+// Espacio: hereda de ObjetoReservable (sala, auditorio, cancha, laboratorio...)
 class Espacio extends ObjetoReservable
 {
     protected static function booted(): void

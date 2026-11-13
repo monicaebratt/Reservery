@@ -10,14 +10,14 @@ use App\Models\ListaEspera;
 use App\Services\ListaEspera\ListaEsperaService;
 use Illuminate\Http\Request;
 
-/** RF22 por API. */
+// Por API
 class ListaEsperaApiController extends Controller
 {
     public function __construct(private ListaEsperaService $listaEspera)
     {
     }
 
-    /** GET /api/lista-espera */
+    // GET /api/lista-espera
     public function index(Request $request)
     {
         return ListaEsperaResource::collection(
@@ -25,7 +25,7 @@ class ListaEsperaApiController extends Controller
         );
     }
 
-    /** POST /api/lista-espera — mismos datos que una reserva */
+    // POST /api/lista-espera — mismos datos que una reserva
     public function store(SolicitudReservaRequest $request)
     {
         $entrada = $this->listaEspera->inscribir($request->user(), $request->datos());
@@ -33,13 +33,13 @@ class ListaEsperaApiController extends Controller
         return (new ListaEsperaResource($entrada->load('objeto')))->response()->setStatusCode(201);
     }
 
-    /** POST /api/lista-espera/{id}/convertir */
+    // POST /api/lista-espera/{id}/convertir
     public function convertir(Request $request, ListaEspera $entrada)
     {
         return (new ReservaResource($this->listaEspera->convertir($entrada, $request->user())))->response()->setStatusCode(201);
     }
 
-    /** DELETE /api/lista-espera/{id} */
+    // DELETE /api/lista-espera/{id}
     public function destroy(Request $request, ListaEspera $entrada)
     {
         $this->listaEspera->cancelar($entrada, $request->user());

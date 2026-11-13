@@ -8,16 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
-/** Editar el perfil propio por API. */
+// Editar el perfil propio por API
 class PerfilApiController extends Controller
 {
-    /** GET /api/perfil */
+    // GET /api/perfil
     public function show(Request $request)
     {
         return new UsuarioResource($request->user()->load('organizacion'));
     }
 
-    /** PUT /api/perfil (o POST con _method=PUT si trae foto) */
+    // PUT /api/perfil (o POST con _method=PUT si trae foto)
     public function update(Request $request)
     {
         $usuario = $request->user();

@@ -5,12 +5,7 @@ use App\Services\ListaEspera\ListaEsperaService;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
-/*
-| Mantenimiento diario de Reservery:
-|  - completa las reservas aprobadas que ya terminaron (pasa por el patrón State)
-|  - vence las inscripciones de lista de espera de días que ya pasaron
-| Ejecutar a mano: php artisan reservery:mantenimiento
-*/
+// Tarea diaria: completa las reservas que terminaron y limpia la lista de espera vieja
 Artisan::command('reservery:mantenimiento', function (ListaEsperaService $listaEspera) {
     $completadas = 0;
 

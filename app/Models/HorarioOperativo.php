@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** RF06: rango de horario operativo de un objeto para un día de la semana. */
+// Rango de horario operativo de un objeto para un día de la semana
 class HorarioOperativo extends Model
 {
     protected $table = 'horarios_operativos';

@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rules\Password;
 use Laravel\Socialite\Facades\Socialite;
 
-/** Autenticación de la API con tokens de Sanctum (RF01). */
+// Autenticación de la API con tokens de Sanctum
 class AuthApiController extends Controller
 {
-    /** POST /api/auth/registro */
+    // POST /api/auth/registro
     public function registro(Request $request, OrganizacionService $organizaciones)
     {
         $datos = $request->validate([
@@ -48,7 +48,7 @@ class AuthApiController extends Controller
         ], 201);
     }
 
-    /** POST /api/auth/login → devuelve un token Bearer */
+    // POST /api/auth/login → devuelve un token Bearer
     public function login(Request $request)
     {
         $datos = $request->validate([
@@ -59,7 +59,7 @@ class AuthApiController extends Controller
 
         $usuario = User::where('email', mb_strtolower($datos['email']))->first();
 
-        // HU02: no se dice cuál de los dos datos falló
+        // No se dice cuál de los dos datos falló
         if (! $usuario || ! $usuario->password || ! Hash::check($datos['password'], $usuario->password)) {
             return response()->json(['mensaje' => 'Credenciales incorrectas.'], 401);
         }
@@ -70,10 +70,7 @@ class AuthApiController extends Controller
         return $this->conToken($usuario->load('organizacion'), $datos['dispositivo'] ?? 'api');
     }
 
-    /**
-     * POST /api/auth/google {access_token}
-     * Para apps externas que ya obtuvieron un token de Google.
-     */
+    // Login con Google para apps que ya tienen el token
     public function google(Request $request, OrganizacionService $organizaciones)
     {
         $datos = $request->validate([
@@ -81,8 +78,7 @@ class AuthApiController extends Controller
             'codigo' => ['nullable', 'string', 'max:12'],
         ]);
 
-        // El token debe haberse creado para Reservery (aud) y con un correo verificado.
-        // Si no, una app ajena con el token de alguien podría entrar como esa persona.
+        // El token tiene que ser de Reservery y con el correo verificado
         try {
             $info = Http::timeout(5)->get('https://oauth2.googleapis.com/tokeninfo', ['access_token' => $datos['access_token']])->json();
         } catch (\Throwable) {
@@ -107,7 +103,7 @@ class AuthApiController extends Controller
                 'foto' => $google->getAvatar(),
                 'email_verified_at' => now(),
             ]);
-        $this->vincularGoogle($usuario, $google->getId());
+        $this->vincularGoogle($usuario, $google->getId(), $google->getEmail());
         $organizaciones->aplicarInvitacionVerificada($usuario);
 
         if (! $usuario->fresh()->organizacion_id) {
@@ -119,7 +115,7 @@ class AuthApiController extends Controller
         return $this->conToken($usuario->fresh('organizacion'), 'google');
     }
 
-    /** POST /api/auth/reenviar-verificacion {email}. Responde igual exista o no el correo. */
+    // POST /api/auth/reenviar-verificacion {email}. Responde igual exista o no el correo
     public function reenviarVerificacion(Request $request)
     {
         $datos = $request->validate(['email' => ['required', 'email']]);
@@ -128,13 +124,13 @@ class AuthApiController extends Controller
         return response()->json(['mensaje' => 'Si el correo está registrado y sin confirmar, te enviamos un nuevo enlace.']);
     }
 
-    /** GET /api/auth/yo */
+    // GET /api/auth/yo
     public function yo(Request $request)
     {
         return new UsuarioResource($request->user()->load('organizacion'));
     }
 
-    /** POST /api/auth/logout → revoca el token usado en la petición */
+    // POST /api/auth/logout → revoca el token usado en la petición
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -153,15 +149,12 @@ class AuthApiController extends Controller
         ], $estado);
     }
 
-    /**
-     * Si la cuenta con ese correo nunca confirmó el correo, quien la creó no
-     * demostró que era suyo: Google sí lo demuestra, así que se confirma y se
-     * borra esa contraseña para que nadie más pueda entrar con ella.
-     */
-    private function vincularGoogle(User $usuario, string $googleId): void
+    // Si el correo no estaba confirmado, Google lo confirma y se borra la contraseña anterior
+    private function vincularGoogle(User $usuario, string $googleId, ?string $correoGoogle): void
     {
         $datos = ['google_id' => $usuario->google_id ?? $googleId];
-        if (! $usuario->hasVerifiedEmail()) {
+        // Google solo confirma su propio correo, no uno distinto puesto en el perfil
+        if (! $usuario->hasVerifiedEmail() && $usuario->email === mb_strtolower((string) $correoGoogle)) {
             $datos += ['email_verified_at' => now(), 'password' => null];
         }
         $usuario->forceFill($datos)->save();

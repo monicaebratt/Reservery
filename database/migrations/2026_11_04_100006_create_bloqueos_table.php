@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/** RF07: inhabilitar fechas u horarios por mantenimiento o eventos. */
+// Inhabilitar fechas u horarios por mantenimiento o eventos
 return new class extends Migration
 {
     public function up(): void

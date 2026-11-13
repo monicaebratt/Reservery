@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Bloqueo;
 use App\Models\Reserva;
 
-/** RF26: calendario centralizado con todas las reservas activas y los bloqueos. */
+// Calendario centralizado con todas las reservas activas y los bloqueos
 class CalendarioService
 {
     public function eventos(string $desde, string $hasta, ?int $objetoId = null, ?string $tipo = null, bool $incluirFinalizadas = false): array
@@ -52,7 +52,7 @@ class CalendarioService
         return $reservas->concat($bloqueos)->values()->all();
     }
 
-    /** Texto oscuro sobre colores claros y blanco sobre colores oscuros. */
+    // Texto oscuro sobre colores claros y blanco sobre colores oscuros
     private function textoLegible(string $hex): string
     {
         [$r, $g, $b] = sscanf(ltrim($hex, '#'), '%02x%02x%02x');
