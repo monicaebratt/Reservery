@@ -158,4 +158,12 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
     Route::put('/perfil', [\App\Http\Controllers\PerfilController::class, 'update'])->name('perfil.update');    
     Route::put('/perfil/contrasena', [\App\Http\Controllers\PerfilController::class, 'updatePassword'])->name('perfil.password');    
     Route::delete('/perfil/foto', [\App\Http\Controllers\PerfilController::class, 'destroyFoto'])->name('perfil.foto.destroy');
+
+    //Propositos y regla de prioridad
+    Route::middleware('rol:admin')->group(function () {        
+Route::get('/propositos', [\App\Http\Controllers\PropositoController::class, 'index'])->name('propositos.index');        
+Route::post('/propositos', [\App\Http\Controllers\PropositoController::class, 'store'])->name('propositos.store');        
+Route::put('/propositos/{proposito}', [\App\Http\Controllers\PropositoController::class, 'update'])->name('propositos.update');        
+Route::patch('/propositos/{proposito}/{direccion}', [\App\Http\Controllers\PropositoController::class, 'mover'])            ->whereIn('direccion', ['subir', 'bajar'])->name('propositos.mover');        
+Route::delete('/propositos/{proposito}', [\App\Http\Controllers\PropositoController::class, 'destroy'])->name('propositos.destroy');    });
 });

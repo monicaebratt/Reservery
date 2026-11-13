@@ -100,4 +100,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('/perfil', [\App\Http\Controllers\Api\PerfilApiController::class, 'show']);        
     Route::put('/perfil', [\App\Http\Controllers\Api\PerfilApiController::class, 'update']);
 
+    //Propositos y prioridad
+      Route::get('/propositos', [\App\Http\Controllers\Api\PropositoApiController::class, 'index']);        
+    Route::middleware('rol:admin')->group(function () {            
+    Route::post('/propositos', [\App\Http\Controllers\Api\PropositoApiController::class, 'store']);            
+    Route::put('/propósitos/{proposito}', [\App\Http\Controllers\Api\PropositoApiController::class, 'update']);            
+    Route::delete('/propositos/{proposito}', [\App\Http\Controllers\Api\PropositoApiController::class, 'destroy']);        });
+
 });
