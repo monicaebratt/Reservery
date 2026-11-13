@@ -1,0 +1,1 @@
+@include('errors.plantilla', ['codigo' => 419, 'imagen' => 'img/error-419.png', 'cuadrada' => true, 'descripcion' => 'La mascota de Reservery dormida junto a un reloj de arena con el número 419', 'titulo' => '¡Oops! La página expiró', 'mensaje' => 'Pasó mucho tiempo sin actividad. Recarga la página e inténtalo de nuevo.'])

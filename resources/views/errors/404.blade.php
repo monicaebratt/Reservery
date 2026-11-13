@@ -1,0 +1,1 @@
+@include('errors.plantilla', ['codigo' => 404, 'imagen' => 'img/error-404.png', 'descripcion' => 'La mascota de Reservery, confundida, sostiene un letrero con el número 404', 'titulo' => '¡Oops! Esta página no existe', 'mensaje' => 'Puede que el enlace esté mal escrito, que la página se haya movido o que pertenezca a otra organización.'])

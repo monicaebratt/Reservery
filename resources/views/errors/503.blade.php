@@ -1,0 +1,1 @@
+@include('errors.plantilla', ['codigo' => 503, 'imagen' => 'img/error-503.png', 'cuadrada' => true, 'descripcion' => 'La mascota de Reservery con casco y un cono de obra, número 503', 'titulo' => 'Volvemos enseguida', 'mensaje' => 'Estamos haciendo mantenimiento. Intenta de nuevo en unos minutos.'])

@@ -1,0 +1,1 @@
+@include('errors.plantilla', ['codigo' => 429, 'imagen' => 'img/error-429.png', 'cuadrada' => true, 'descripcion' => 'La mascota de Reservery mareada pide una pausa con la mano, número 429', 'titulo' => '¡Oops! Demasiados intentos', 'mensaje' => 'Hiciste muchas solicitudes seguidas. Espera un minuto e inténtalo de nuevo.'])
