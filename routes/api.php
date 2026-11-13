@@ -95,4 +95,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::patch('/notificaciones/{notificacion}/leer', [\App\Http\Controllers\Api\NotificacionApiController::class, 'leer']);        
     Route::post('/notificaciones/leer-todas', [\App\Http\Controllers\Api\NotificacionApiController::class, 'leerTodas']);
     });
+
+    //Perfil
+    Route::get('/perfil', [\App\Http\Controllers\Api\PerfilApiController::class, 'show']);        
+    Route::put('/perfil', [\App\Http\Controllers\Api\PerfilApiController::class, 'update']);
+
 });
