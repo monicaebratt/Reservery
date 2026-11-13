@@ -1,66 +1,97 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Reservery
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plataforma web con API REST para la gestión centralizada de reservas de espacios y recursos compartidos.
+Facultad de Ingenierías · Instituto Tecnológico Metropolitano · Medellín, 2026
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Sobre el proyecto
+En muchas organizaciones los salones, laboratorios, auditorios y equipos se reservan por mensajes, llamadas o agendas físicas. Una persona tiene que revisar cada solicitud a mano, y eso termina en cruces de horario, dobles reservas y usuarios que nunca saben si su solicitud fue recibida.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Reservery reemplaza esa coordinación manual por un motor de disponibilidad en tiempo real. Cada organización registra su inventario y sus reglas, y sus miembros reservan desde la web o desde la API. El sistema valida cada solicitud al instante, resuelve los choques según la prioridad de cada reserva, propone alternativas cuando algo está ocupado y avisa de cada cambio.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Learning Laravel
+## Roles
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Organización.** Registra la institución, invita a sus miembros y decide quién es administrador. También tiene los permisos de un administrador.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Administrador.** Gestiona el inventario, los horarios, los bloqueos y las prioridades, aprueba las solicitudes y consulta los reportes.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Usuario.** Consulta la disponibilidad, hace y cancela sus reservas y recibe notificaciones.
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Funcionalidades
 
-### Premium Partners
+- Inicio de sesión con correo o con Google, con confirmación del correo
+- Disponibilidad en tiempo real por día o por semana
+- Reservas compuestas: un espacio junto con sus recursos en una sola solicitud
+- Prioridad por propósito, con reemplazo y aviso a la persona afectada
+- Alternativas equivalentes y lista de espera cuando algo está ocupado
+- Bloqueos por mantenimiento o eventos y calendario centralizado
+- Reportes de ocupación, espacios poco usados y horas de mayor demanda, con descarga en PDF
+- Notificaciones en la plataforma y por correo
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
 
-## Contributing
+## Arquitectura
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+El proyecto usa Laravel con una arquitectura por capas, y la web y la API comparten la misma lógica.
 
-## Code of Conduct
+Las peticiones entran por las rutas y pasan por middleware que revisa la sesión, el correo confirmado, la organización habilitada y el rol. Los **controladores** solo reciben y validan; la lógica del negocio vive en los **servicios**, organizados por dominio: disponibilidad, reservas, prioridad, sustitución, lista de espera, notificaciones y analítica.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Los **modelos** aplican un filtro global para que cada organización vea únicamente su propia información.
 
-## Security Vulnerabilities
+El ciclo de vida de la reserva usa el **patrón State**. Toda reserva empieza *pendiente* y puede pasar a *aprobada*, *rechazada* o *cancelada*; una aprobada solo puede cancelarse o completarse. Cada estado conoce sus propias transiciones, así que no se puede, por ejemplo, aprobar una reserva rechazada.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Cuando una reserva cambia de estado se dispara un **evento** que atienden tres listeners por separado: uno notifica a la persona, otro revisa la lista de espera y otro resuelve los reemplazos pendientes.
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Modelo de datos
+
+La base de datos en MySQL gira en torno a la organización y la reserva. Los espacios y los recursos se guardan juntos como objetos reservables, cada uno con su horario de atención y sus bloqueos. Una reserva pertenece a un usuario y a un propósito, puede incluir varios objetos a la vez y guarda el historial de sus cambios. Alrededor están los reemplazos, la lista de espera y las notificaciones.
+
+
+## Tecnologías
+
+Laravel 12, PHP 8.2 y MySQL 8 en el servidor, con Sanctum para la API y Socialite para Google. La interfaz usa Blade y Bootstrap 5, junto con Chart.js, DataTables y FullCalendar. Los PDF se generan con DomPDF y los festivos de Colombia se consultan en Nager.Date.
+
+El proyecto cuenta con 75 pruebas automatizadas con PHPUnit.
+
+
+## Estructura
+
+```
+app/
+  Http/Controllers/       controladores web
+  Http/Controllers/Api/   controladores de la API
+  Http/Middleware/        filtros de rol y organización
+  Services/               lógica del negocio
+  States/                 estados de la reserva
+  Events/ y Listeners/    reacciones a los cambios
+  Models/                 modelos de datos
+database/                 migraciones y datos de prueba
+resources/views/          vistas
+routes/                   rutas web y de la API
+tests/                    pruebas automatizadas
+```
+
+
+## API
+
+Se obtiene un token con `POST /api/auth/login` y se envía en cada petición con la cabecera `Authorization: Bearer {token}`.
+
+
+## Datos de prueba
+
+Con `php artisan migrate --seed` se crea una organización de ejemplo. Todos los usuarios usan la contraseña `password`.
+
+- Organización: `org@reservery.com`
+- Administrador: `admin@reservery.com`
+- Usuario: `usuario@reservery.com`
+
+Código para unirse a la organización: `DEMO2026`
+
+
+## Equipo
+
+Mónica Ebratt Castro  
+Isabella Ortiz Tamayo  
+Andrés Felipe Grajales Acevedo
