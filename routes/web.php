@@ -147,5 +147,9 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
 
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
-
+    // Notificaciones
+    Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index'])->name('notificaciones.index');    
+    Route::get('/notificaciones/contador', [\App\Http\Controllers\NotificacionController::class, 'contador'])->name('notificaciones.contador');    
+    Route::patch('/notificaciones/{notificacion}/leer', [\App\Http\Controllers\NotificacionController::class, 'leer'])->name('notificaciones.leer');    
+    Route::post('/notificaciones/leer-todas', [\App\Http\Controllers\NotificacionController::class, 'leerTodas'])->name('notificaciones.leer-todas');
 });

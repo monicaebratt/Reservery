@@ -90,6 +90,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 
         // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
-
+        //Notificaciones
+    Route::get('/notificaciones', [\App\Http\Controllers\Api\NotificacionApiController::class, 'index']);        
+    Route::patch('/notificaciones/{notificacion}/leer', [\App\Http\Controllers\Api\NotificacionApiController::class, 'leer']);        
+    Route::post('/notificaciones/leer-todas', [\App\Http\Controllers\Api\NotificacionApiController::class, 'leerTodas']);
     });
 });
