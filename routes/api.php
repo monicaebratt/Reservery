@@ -90,6 +90,33 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 
         // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
-
+        //Notificaciones
+    Route::get('/notificaciones', [\App\Http\Controllers\Api\NotificacionApiController::class, 'index']);        
+    Route::patch('/notificaciones/{notificacion}/leer', [\App\Http\Controllers\Api\NotificacionApiController::class, 'leer']);        
+    Route::post('/notificaciones/leer-todas', [\App\Http\Controllers\Api\NotificacionApiController::class, 'leerTodas']);
     });
+
+    //Perfil
+    Route::get('/perfil', [\App\Http\Controllers\Api\PerfilApiController::class, 'show']);        
+    Route::put('/perfil', [\App\Http\Controllers\Api\PerfilApiController::class, 'update']);
+
+    //Propositos y prioridad
+      Route::get('/propositos', [\App\Http\Controllers\Api\PropositoApiController::class, 'index']);        
+    Route::middleware('rol:admin')->group(function () {            
+    Route::post('/propositos', [\App\Http\Controllers\Api\PropositoApiController::class, 'store']);            
+    Route::put('/propósitos/{proposito}', [\App\Http\Controllers\Api\PropositoApiController::class, 'update']);            
+    Route::delete('/propositos/{proposito}', [\App\Http\Controllers\Api\PropositoApiController::class, 'destroy']);        });
+
+    // Reemplazos por prioridad
+    Route::get('/reemplazos', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'index']);        
+Route::post('/reemplazos/{reemplazo}/alternativa', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'aceptarAlternativa']);        
+Route::post('/reemplazos/{reemplazo}/ceder', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'ceder']);
+
+    //Analítica
+    Route::middleware('rol:admin')->group(function () {            
+Route::get('/analitica/ocupacion', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'ocupacion']);            
+Route::get('/analítica/subutilizados', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'subutilizados']);            
+Route::get('/analitica/demanda', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'demanda']);            
+Route::get('/analitica/reporte-pdf', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'pdf']);        });
+
 });

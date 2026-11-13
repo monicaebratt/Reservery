@@ -147,5 +147,35 @@ Route::middleware(['auth', 'verified', 'organizacion.activa'])->group(function (
 
 
     // ===== Felipe: notificaciones, perfil, propósitos, reemplazos y analítica =====
+    // Notificaciones
+    Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index'])->name('notificaciones.index');    
+    Route::get('/notificaciones/contador', [\App\Http\Controllers\NotificacionController::class, 'contador'])->name('notificaciones.contador');    
+    Route::patch('/notificaciones/{notificacion}/leer', [\App\Http\Controllers\NotificacionController::class, 'leer'])->name('notificaciones.leer');    
+    Route::post('/notificaciones/leer-todas', [\App\Http\Controllers\NotificacionController::class, 'leerTodas'])->name('notificaciones.leer-todas');
+
+    // Perfil del usuario activo
+    Route::get('/perfil', [\App\Http\Controllers\PerfilController::class, 'edit'])->name('perfil.edit');    
+    Route::put('/perfil', [\App\Http\Controllers\PerfilController::class, 'update'])->name('perfil.update');    
+    Route::put('/perfil/contrasena', [\App\Http\Controllers\PerfilController::class, 'updatePassword'])->name('perfil.password');    
+    Route::delete('/perfil/foto', [\App\Http\Controllers\PerfilController::class, 'destroyFoto'])->name('perfil.foto.destroy');
+
+    //Propositos y regla de prioridad
+    Route::middleware('rol:admin')->group(function () {        
+Route::get('/propositos', [\App\Http\Controllers\PropositoController::class, 'index'])->name('propositos.index');        
+Route::post('/propositos', [\App\Http\Controllers\PropositoController::class, 'store'])->name('propositos.store');        
+Route::put('/propositos/{proposito}', [\App\Http\Controllers\PropositoController::class, 'update'])->name('propositos.update');        
+Route::patch('/propositos/{proposito}/{direccion}', [\App\Http\Controllers\PropositoController::class, 'mover'])            ->whereIn('direccion', ['subir', 'bajar'])->name('propositos.mover');        
+Route::delete('/propositos/{proposito}', [\App\Http\Controllers\PropositoController::class, 'destroy'])->name('propositos.destroy');    });
+
+// Reemplazos por prioridad
+Route::get('/reemplazos', [\App\Http\Controllers\ReemplazoController::class, 'index'])->name('reemplazos.index');    
+Route::get('/reemplazos/{reemplazo}', [\App\Http\Controllers\ReemplazoController::class, 'show'])->name('reemplazos.show');    
+Route::post('/reemplazos/{reemplazo}/alternativa', [\App\Http\Controllers\ReemplazoController::class, 'aceptarAlternativa'])->name('reemplazos.alternativa');    
+Route::post('/reemplazos/{reemplazo}/ceder', [\App\Http\Controllers\ReemplazoController::class, 'ceder'])->name('reemplazos.ceder');
+
+//Analitica y reporte
+Route::middleware('rol:admin')->group(function () {        
+Route::get('/analitica', [\App\Http\Controllers\AnaliticaController::class, 'index'])->name('analitica.index');        
+Route::get('/analitica/reporte-pdf', [\App\Http\Controllers\AnaliticaController::class, 'pdf'])->name('analitica.pdf');    });
 
 });
