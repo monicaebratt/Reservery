@@ -112,4 +112,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 Route::post('/reemplazos/{reemplazo}/alternativa', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'aceptarAlternativa']);        
 Route::post('/reemplazos/{reemplazo}/ceder', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'ceder']);
 
+    //Analítica
+    Route::middleware('rol:admin')->group(function () {            
+Route::get('/analitica/ocupacion', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'ocupacion']);            
+Route::get('/analítica/subutilizados', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'subutilizados']);            
+Route::get('/analitica/demanda', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'demanda']);            
+Route::get('/analitica/reporte-pdf', [\App\Http\Controllers\Api\AnaliticaApiController::class, 'pdf']);        });
+
 });

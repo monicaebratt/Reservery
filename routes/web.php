@@ -173,4 +173,9 @@ Route::get('/reemplazos/{reemplazo}', [\App\Http\Controllers\ReemplazoController
 Route::post('/reemplazos/{reemplazo}/alternativa', [\App\Http\Controllers\ReemplazoController::class, 'aceptarAlternativa'])->name('reemplazos.alternativa');    
 Route::post('/reemplazos/{reemplazo}/ceder', [\App\Http\Controllers\ReemplazoController::class, 'ceder'])->name('reemplazos.ceder');
 
+//Analitica y reporte
+Route::middleware('rol:admin')->group(function () {        
+Route::get('/analitica', [\App\Http\Controllers\AnaliticaController::class, 'index'])->name('analitica.index');        
+Route::get('/analitica/reporte-pdf', [\App\Http\Controllers\AnaliticaController::class, 'pdf'])->name('analitica.pdf');    });
+
 });
