@@ -107,4 +107,9 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::put('/propósitos/{proposito}', [\App\Http\Controllers\Api\PropositoApiController::class, 'update']);            
     Route::delete('/propositos/{proposito}', [\App\Http\Controllers\Api\PropositoApiController::class, 'destroy']);        });
 
+    // Reemplazos por prioridad
+    Route::get('/reemplazos', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'index']);        
+Route::post('/reemplazos/{reemplazo}/alternativa', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'aceptarAlternativa']);        
+Route::post('/reemplazos/{reemplazo}/ceder', [\App\Http\Controllers\Api\ReemplazoApiController::class, 'ceder']);
+
 });

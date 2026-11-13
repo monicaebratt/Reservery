@@ -166,4 +166,11 @@ Route::post('/propositos', [\App\Http\Controllers\PropositoController::class, 's
 Route::put('/propositos/{proposito}', [\App\Http\Controllers\PropositoController::class, 'update'])->name('propositos.update');        
 Route::patch('/propositos/{proposito}/{direccion}', [\App\Http\Controllers\PropositoController::class, 'mover'])            ->whereIn('direccion', ['subir', 'bajar'])->name('propositos.mover');        
 Route::delete('/propositos/{proposito}', [\App\Http\Controllers\PropositoController::class, 'destroy'])->name('propositos.destroy');    });
+
+// Reemplazos por prioridad
+Route::get('/reemplazos', [\App\Http\Controllers\ReemplazoController::class, 'index'])->name('reemplazos.index');    
+Route::get('/reemplazos/{reemplazo}', [\App\Http\Controllers\ReemplazoController::class, 'show'])->name('reemplazos.show');    
+Route::post('/reemplazos/{reemplazo}/alternativa', [\App\Http\Controllers\ReemplazoController::class, 'aceptarAlternativa'])->name('reemplazos.alternativa');    
+Route::post('/reemplazos/{reemplazo}/ceder', [\App\Http\Controllers\ReemplazoController::class, 'ceder'])->name('reemplazos.ceder');
+
 });
