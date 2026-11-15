@@ -41,12 +41,23 @@ class Reemplazo extends Model
 
     public function getEstadoNombreAttribute(): string
     {
-        return [
+        $esMia = $this->afectada?->user_id === auth()->id();
+        $nombre = $this->afectada?->usuario?->name ?? 'El usuario';
+
+        $textos = $esMia ? [
             'propuesto' => 'Esperando tu respuesta',
             'alternativa_aceptada' => 'Aceptaste una alternativa',
             'sin_alternativa' => 'Aceptaste ceder el horario',
             'confirmado' => 'Reemplazo confirmado',
             'descartado' => 'Descartado: tu reserva se mantiene',
-        ][$this->estado] ?? $this->estado;
+        ] : [
+            'propuesto' => "Esperando respuesta de {$nombre}",
+            'alternativa_aceptada' => "{$nombre} aceptó una alternativa",
+            'sin_alternativa' => "{$nombre} aceptó ceder el horario",
+            'confirmado' => 'Reemplazo confirmado',
+            'descartado' => 'Descartado: la reserva se mantiene',
+        ];
+
+        return $textos[$this->estado] ?? $this->estado;
     }
 }
